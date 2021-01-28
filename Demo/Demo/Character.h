@@ -15,9 +15,13 @@ public:
 	void AddMemory(std::string what_happened);
 	int GetMovement();
 
+	void RenderMoveableArea(sf::RenderWindow* window);
+
+	std::vector<Node*> Moveable_Nodes_;
+
 protected:
 	std::string name_;
 	float health_;
 	float max_health_;
-	int movement_ = 1;
+	int movement_ = 3;
 };

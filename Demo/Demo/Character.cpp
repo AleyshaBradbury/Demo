@@ -39,3 +39,10 @@ int Character::GetMovement()
 {
 	return movement_;
 }
+
+void Character::RenderMoveableArea(sf::RenderWindow* window)
+{
+	for (Node* node : Moveable_Nodes_) {
+		node->RenderMoveable(window);
+	}
+}

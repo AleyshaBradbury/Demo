@@ -28,9 +28,27 @@ void Grid::InitialiseShowNodesButton(sf::Font* font)
 		button_size, font, 20);
 }
 
-void Grid::StartTurn(Character* character)
+void Grid::InitialiseCharacter(Character* character, sf::Vector2i node_position)
 {
+	Node* node = pathfinding_.FindNodeByPosition(node_position);
+	SetGameObjectPositionOnGrid(character, node);
 	pathfinding_.FindAvailableNodes(character);
+}
+
+void Grid::MoveCharacter(Character* character, Node* node)
+{
+	if (std::find(character->Moveable_Nodes_.begin(), character->Moveable_Nodes_.end(),
+		node) != character->Moveable_Nodes_.end()) {
+		SetGameObjectPositionOnGrid(character, node);
+		pathfinding_.FindAvailableNodes(character);
+		character->AddMemory("Moved");
+	}
+}
+
+void Grid::MoveCharacter(Character* character, sf::Vector2i node_position)
+{
+	Node* node = pathfinding_.FindNodeByPosition(node_position);
+	MoveCharacter(character, node);
 }
 
 Node* Grid::GridCollision(sf::Vector2f mouse_position)

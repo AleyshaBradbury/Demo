@@ -5,11 +5,12 @@ class Node : public sf::RectangleShape
 {
 public:
 	Node(sf::Vector2i grid_position);
+	void RenderMoveable(sf::RenderWindow* window);
 
 	//Get the position of the node in the grid.
 	sf::Vector2i GetGridPosition();
 	void AddNeighbour(Node* node, int i);
-	Node** GetNeighbours();
+	Node* GetNeighbour(int i);
 	int GetNumNeighbours();
 	int GetDistance();
 
@@ -21,4 +22,6 @@ private:
 	//The number of neighbours created so far.
 	int num_neighbours_ = 0;
 	int distance = 1;
+
+	sf::RectangleShape moveable_;
 };

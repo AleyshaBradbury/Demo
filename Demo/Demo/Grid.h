@@ -12,7 +12,9 @@ public:
 	~Grid();
 	void InitialiseShowNodesButton(sf::Font* font);
 
-	void StartTurn(Character* game_object);
+	void InitialiseCharacter(Character* character, sf::Vector2i node_position);
+	void MoveCharacter(Character* character, Node* node);
+	void MoveCharacter(Character* character, sf::Vector2i node_position);
 	Node* GridCollision(sf::Vector2f mouse_position);
 	void CreateMap(std::string file_name);
 

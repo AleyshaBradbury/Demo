@@ -2,19 +2,19 @@
 #include <unordered_map>
 #include "Node.h"
 #include "GameObject.h"
+#include "Character.h"
 
 class Pathfinding
 {
 public:
+	Pathfinding();
 	Node* AddNode(sf::Vector2i node_position);
-	void FindAvailableNodes(GameObject* game_object);
-	std::vector<Node*> Pathfind(Node* start_node, sf::Vector2i end);
-	void RenderMoveableArea(sf::RenderWindow* window);
+	void FindAvailableNodes(Character* character);
+	std::vector<Node*> Pathfind(Node* start_node, Node* end_node);
 	void RenderNodes(sf::RenderWindow* window);
 	
 	Node* FindNodeByPosition(sf::Vector2i grid_position);
 	int FindNodeNumByPosition(sf::Vector2i grid_position);
-
 	void InvertShowNodes();
 	
 private:
@@ -22,13 +22,12 @@ private:
 	float h(sf::Vector2i start, sf::Vector2i end);
 	//Returns the distance between the neighbouring nodes.
 	float d(Node* end);
-	void CreateMoveableArea();
 	
 	bool show_nodes_ = false;
 	std::vector<Node*> Nodes_;
 
-	bool show_moveable_area_ = true;
-	std::vector<Node*> Moveable_Nodes_;
-	sf::ConvexShape moveable_area_;
+	//Moveable nodes variables.
+	float max_distance_ = 0;
+	std::vector<Node*> Nodes_To_Be_Checked_;
 };
 

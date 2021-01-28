@@ -7,11 +7,23 @@ Node::Node(sf::Vector2i grid_position)
 	grid_position_ = grid_position;
 
 	//Setup the node.
-	setSize(sf::Vector2f(20.0f, 20.0f));
+	float size = Grid::grid_spacing_ / 5.0f * 3.0f;
+	setSize(sf::Vector2f(size, size));
 	setOrigin(getSize() / 2.0f);
 	setPosition(sf::Vector2f(grid_position_.x * Grid::grid_spacing_ + Grid::grid_spacing_ / 2.0f, 
 		grid_position_.y * Grid::grid_spacing_ + Grid::grid_spacing_ / 2.0f));
 	setFillColor(sf::Color::Blue);
+
+	//Setup the semi-transparent movement indicator.
+	moveable_.setSize(sf::Vector2f(Grid::grid_spacing_, Grid::grid_spacing_));
+	moveable_.setOrigin(moveable_.getSize() / 2.f);
+	moveable_.setPosition(getPosition());
+	moveable_.setFillColor(sf::Color(0.0f, 0.0f, 255.0f, 100.0f));
+}
+
+void Node::RenderMoveable(sf::RenderWindow* window)
+{
+	window->draw(moveable_);
 }
 
 sf::Vector2i Node::GetGridPosition()
@@ -25,9 +37,9 @@ void Node::AddNeighbour(Node* node, int i)
 	num_neighbours_ += 1;
 }
 
-Node** Node::GetNeighbours()
+Node* Node::GetNeighbour(int i)
 {
-	return neighbours_;
+	return neighbours_[i];
 }
 
 int Node::GetNumNeighbours()

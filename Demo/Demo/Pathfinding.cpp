@@ -2,6 +2,10 @@
 #include "Grid.h"
 #include <iostream>
 
+Pathfinding::Pathfinding()
+{
+}
+
 Node*  Pathfinding::AddNode(sf::Vector2i node_position)
 {
 	//Create the new node.
@@ -37,18 +41,47 @@ Node*  Pathfinding::AddNode(sf::Vector2i node_position)
 		}
 	}
 	Nodes_.push_back(node);
-	Node** nodes = Nodes_.back()->GetNeighbours();
 
 	return node;
 }
 
-void Pathfinding::FindAvailableNodes(GameObject* game_object)
+void Pathfinding::FindAvailableNodes(Character* character)
 {
-	Moveable_Nodes_.push_back(Nodes_[0]);
-	CreateMoveableArea();
+	//Empty the moveable nodes variable.
+	character->Moveable_Nodes_.clear();
+
+	//Set the max distance for the pathfinder function.
+	max_distance_ = character->GetMovement();
+	character->Moveable_Nodes_.push_back(character->GetGridNode());
+	//Set up a vector of nodes that need to be checked.
+	Nodes_To_Be_Checked_ = Nodes_;
+	while (Nodes_To_Be_Checked_.size() > 0.0f) {
+		//Pathfind to current node.
+		Node* node = Nodes_To_Be_Checked_.back();
+		Nodes_To_Be_Checked_.pop_back();
+		std::vector<Node*> Path = Pathfind(character->GetGridNode(), 
+			node);
+		if (Path.size() > 0) {
+			character->Moveable_Nodes_.push_back(node);
+		}
+		for (int i = 0; i < Path.size(); i++) {
+			//If the node in the path isnt already a moveable node.
+			if (std::find(character->Moveable_Nodes_.begin(), character->Moveable_Nodes_.end(),
+				Path[i]) == character->Moveable_Nodes_.end()) {
+				//Add the node to the moveable nodes vector.
+				character->Moveable_Nodes_.push_back(Path[i]);
+				//Remove the node from the nodes to be checked vector.
+				std::vector<Node*>::iterator it = std::find(Nodes_To_Be_Checked_.begin(),
+					Nodes_To_Be_Checked_.end(), Path[i]);
+				if (it != Nodes_To_Be_Checked_.end()) {
+					Nodes_To_Be_Checked_.erase(it);
+				}
+			}
+		}
+	}
 }
 
-std::vector<Node*> Pathfinding::Pathfind(Node* start_node, sf::Vector2i end)
+std::vector<Node*> Pathfinding::Pathfind(Node* start_node, Node* end_node)
 {
 
 	//
@@ -58,10 +91,10 @@ std::vector<Node*> Pathfinding::Pathfind(Node* start_node, sf::Vector2i end)
 	//The vector which will hold the final path.
 	std::vector<Node*> Path;
 
-	//Find the nodes for the end position.
-	Node* end_node = FindNodeByPosition(end);
+	//The vector which will hold the end points position.
+	sf::Vector2i end = end_node->GetGridPosition();
 
-	if (!start_node || !end_node) {
+	if (!start_node || !end_node || start_node == end_node) {
 		return Path;
 	}
 
@@ -77,7 +110,8 @@ std::vector<Node*> Pathfinding::Pathfind(Node* start_node, sf::Vector2i end)
 	std::map<Node*, float> gScore;
 	gScore.insert(std::pair<Node*, float>(start_node, 0.0f));
 	std::map<Node*, float> fScore;
-	gScore.insert(std::pair<Node*, float>(start_node, h(start_node->GetGridPosition(), end)));
+	gScore.insert(std::pair<Node*, float>(start_node, 
+		h(start_node->GetGridPosition(), end)));
 
 	while (Open_Set.size() > 0) {
 		Node* current = Open_Set[0];
@@ -110,29 +144,29 @@ std::vector<Node*> Pathfinding::Pathfind(Node* start_node, sf::Vector2i end)
 			}
 		}
 
-		//Get the nodes neighbours and then itterate through them.
-		Node** neighbours = current->GetNeighbours();
 		for (int i = 0; i < 4; i++) {
+			Node* neighbour = current->GetNeighbour(i);
 			//If the neighbour exists.
-			if (neighbours[i]) {
+			if (neighbour) {
 				//Calculate the currentG by adding the gScore for the current node and the
 				//distance between current node and neighbour node.
-				float currentG = gScore[current] + d(neighbours[i]);
-				if (gScore.find(neighbours[i]) == gScore.end()) {
-					gScore.insert(std::pair<Node*, float>(neighbours[i], 1000));
+				float currentG = gScore[current] + d(neighbour);
+				if (gScore.find(neighbour) == gScore.end()) {
+					gScore.insert(std::pair<Node*, float>(neighbour, 1000));
 				}
 				//If currentG is better than previous g for the neighbour.
-				if (currentG < gScore[neighbours[i]]) {
-					Previous_Node[neighbours[i]] = current;
+				if (currentG < gScore[neighbour] && currentG <= max_distance_) {
+
+					Previous_Node[neighbour] = current;
 					//If there is not already an entry for that node then create it and set it.
-					gScore[neighbours[i]] = h(neighbours[i]->GetGridPosition(), end);
+					gScore[neighbour] = h(neighbour->GetGridPosition(), end);
 					//If the fScore for that node already exists then set it to it,
 					//otherwise create it and then set it.
-					fScore[neighbours[i]] =
-						currentG + h(neighbours[i]->GetGridPosition(), end);
+					fScore[neighbour] =
+						currentG + h(neighbour->GetGridPosition(), end);
 					//If the neighbour isnt already in the open set then add it.
-					if (std::find(Open_Set.begin(), Open_Set.end(), neighbours[i]) == Open_Set.end()) {
-						Open_Set.push_back(neighbours[i]);
+					if (std::find(Open_Set.begin(), Open_Set.end(), neighbour) == Open_Set.end()) {
+						Open_Set.push_back(neighbour);
 					}
 				}
 			}
@@ -141,11 +175,6 @@ std::vector<Node*> Pathfinding::Pathfind(Node* start_node, sf::Vector2i end)
 	}
 	Path.clear();
 	return Path;
-}
-
-void Pathfinding::RenderMoveableArea(sf::RenderWindow* window)
-{
-	window->draw(moveable_area_);
 }
 
 void Pathfinding::RenderNodes(sf::RenderWindow* window)
@@ -191,8 +220,4 @@ float Pathfinding::h(sf::Vector2i start, sf::Vector2i end)
 float Pathfinding::d(Node* end)
 {
 	return end->GetDistance();
-}
-
-void Pathfinding::CreateMoveableArea()
-{
 }
