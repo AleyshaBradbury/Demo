@@ -18,6 +18,7 @@ GridPiece::GridPiece(sf::Texture* main_texture, sf::Texture* added_texture,
 	//Set up the added grid piece.
 	added_.setTexture(added_texture);
 	added_.setSize(sf::Vector2f(Grid::grid_spacing_, Grid::grid_spacing_));
+	added_.setOrigin(added_.getSize() / 2.0f);
 	added_.setPosition(grid_node_->getPosition());
 
 	hitbox_.height = Grid::grid_spacing_;

@@ -10,11 +10,12 @@ class Grid
 public:
 	Grid();
 	~Grid();
-	void InitialiseShowNodesButton(sf::Font* font);
+
 
 	void InitialiseCharacter(Character* character, sf::Vector2i node_position);
-	void MoveCharacter(Character* character, Node* node);
+	bool MoveCharacter(Character* character, Node* node);
 	void MoveCharacter(Character* character, sf::Vector2i node_position);
+	void MoveCharacterTowardsTarget(Character* character, GameObject* target);
 	Node* GridCollision(sf::Vector2f mouse_position);
 	void CreateMap(std::string file_name);
 
@@ -22,23 +23,19 @@ public:
 	void SetGameObjectPositionOnGrid(GameObject* game_object, Node* target_node);
 
 	void RenderGridPieces(sf::RenderWindow* window);
-	void RenderNodes(sf::RenderWindow* window);
-	void RenderShowNodesButton(sf::RenderWindow* window);
-
-	bool InvertShowNodes(sf::Vector2f mouse_pos);
 	
 	//Static variables.
 	//The distance between nodes/size of grid pieces.
 	static const float grid_spacing_;
 
 private:
-	void LoadTexture(std::string texture_name);
+	sf::Texture* LoadTexture(std::string texture_name);
 
 	//Grid piece variables.
 	std::vector<GridPiece*> Grid_Pieces_;
-	std::vector<sf::Texture*> Textures_;
+	std::vector<sf::Texture*> Main_Textures_;
+	std::vector<sf::Texture*> Sub_Textures_;
 
 	//Pathfinding variables.
 	Pathfinding pathfinding_;
-	Button* show_nodes_button_;
 };

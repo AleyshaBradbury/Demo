@@ -51,7 +51,6 @@ void Pathfinding::FindAvailableNodes(Character* character)
 	character->Moveable_Nodes_.clear();
 
 	//Set the max distance for the pathfinder function.
-	max_distance_ = character->GetMovement();
 	character->Moveable_Nodes_.push_back(character->GetGridNode());
 	//Set up a vector of nodes that need to be checked.
 	Nodes_To_Be_Checked_ = Nodes_;
@@ -59,8 +58,9 @@ void Pathfinding::FindAvailableNodes(Character* character)
 		//Pathfind to current node.
 		Node* node = Nodes_To_Be_Checked_.back();
 		Nodes_To_Be_Checked_.pop_back();
-		std::vector<Node*> Path = Pathfind(character->GetGridNode(), 
-			node);
+		std::vector<Node*> Path = Pathfind(character->GetGridNode(), node, 
+			character->GetMovement());
+
 		if (Path.size() > 0) {
 			character->Moveable_Nodes_.push_back(node);
 		}
@@ -81,7 +81,7 @@ void Pathfinding::FindAvailableNodes(Character* character)
 	}
 }
 
-std::vector<Node*> Pathfinding::Pathfind(Node* start_node, Node* end_node)
+std::vector<Node*> Pathfinding::Pathfind(Node* start_node, Node* end_node, int max_distance)
 {
 
 	//
@@ -137,12 +137,7 @@ std::vector<Node*> Pathfinding::Pathfind(Node* start_node, Node* end_node)
 		}
 
 		//Delete the current node from the open set.
-		for (int i = 0; i < Open_Set.size(); i++) {
-			if (Open_Set[i] == current) {
-				Open_Set.erase(Open_Set.begin() + i);
-				break;
-			}
-		}
+		Open_Set.erase(std::find(Open_Set.begin(), Open_Set.end(), current));
 
 		for (int i = 0; i < 4; i++) {
 			Node* neighbour = current->GetNeighbour(i);
@@ -155,8 +150,7 @@ std::vector<Node*> Pathfinding::Pathfind(Node* start_node, Node* end_node)
 					gScore.insert(std::pair<Node*, float>(neighbour, 1000));
 				}
 				//If currentG is better than previous g for the neighbour.
-				if (currentG < gScore[neighbour] && currentG <= max_distance_) {
-
+				if (currentG < gScore[neighbour] && currentG < max_distance) {
 					Previous_Node[neighbour] = current;
 					//If there is not already an entry for that node then create it and set it.
 					gScore[neighbour] = h(neighbour->GetGridPosition(), end);
@@ -170,20 +164,10 @@ std::vector<Node*> Pathfinding::Pathfind(Node* start_node, Node* end_node)
 					}
 				}
 			}
-
 		}
 	}
 	Path.clear();
 	return Path;
-}
-
-void Pathfinding::RenderNodes(sf::RenderWindow* window)
-{
-	if (show_nodes_) {
-		for (int i = 0; i < Nodes_.size(); i++) {
-			window->draw(*Nodes_[i]);
-		}
-	}
 }
 
 Node* Pathfinding::FindNodeByPosition(sf::Vector2i grid_position)
@@ -204,11 +188,6 @@ int Pathfinding::FindNodeNumByPosition(sf::Vector2i grid_position)
 		}
 	}
 	return -1;
-}
-
-void Pathfinding::InvertShowNodes()
-{
-	show_nodes_ = !show_nodes_;
 }
 
 

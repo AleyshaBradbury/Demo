@@ -6,26 +6,17 @@
 
 Grid::Grid()
 {
-	LoadTexture("gfx/grassyPlane.png");
-	LoadTexture("gfx/sandyPlane.png");
-	LoadTexture("gfx/stonePlane.png");
-	LoadTexture("gfx/hut.png");
-	LoadTexture("gfx/loneMountain.png");
+	Main_Textures_.push_back(LoadTexture("gfx/grassyPlane.png"));
+	Main_Textures_.push_back(LoadTexture("gfx/sandyPlane.png"));
+	Main_Textures_.push_back(LoadTexture("gfx/stonePlane.png"));
+	Sub_Textures_.push_back(LoadTexture("gfx/hut.png"));
+	Sub_Textures_.push_back(LoadTexture("gfx/loneMountain.png"));
 
-	CreateMap("maps/map1.csv");
+	CreateMap("maps/test.csv");
 }
 
 Grid::~Grid()
 {
-	delete show_nodes_button_;
-	show_nodes_button_ = NULL;
-}
-
-void Grid::InitialiseShowNodesButton(sf::Font* font)
-{
-	sf::Vector2f button_size(105.0f, 35.0f);
-	show_nodes_button_ = new Button("Show Nodes", sf::Vector2f(10.0f, 10.0f),
-		button_size, font, 20);
 }
 
 void Grid::InitialiseCharacter(Character* character, sf::Vector2i node_position)
@@ -35,20 +26,42 @@ void Grid::InitialiseCharacter(Character* character, sf::Vector2i node_position)
 	pathfinding_.FindAvailableNodes(character);
 }
 
-void Grid::MoveCharacter(Character* character, Node* node)
+bool Grid::MoveCharacter(Character* character, Node* node)
 {
-	if (std::find(character->Moveable_Nodes_.begin(), character->Moveable_Nodes_.end(),
+	if (character && node &&
+		std::find(character->Moveable_Nodes_.begin(), character->Moveable_Nodes_.end(),
 		node) != character->Moveable_Nodes_.end()) {
 		SetGameObjectPositionOnGrid(character, node);
 		pathfinding_.FindAvailableNodes(character);
 		character->AddMemory("Moved");
+		return true;
 	}
+	return false;
 }
 
 void Grid::MoveCharacter(Character* character, sf::Vector2i node_position)
 {
 	Node* node = pathfinding_.FindNodeByPosition(node_position);
 	MoveCharacter(character, node);
+}
+
+void Grid::MoveCharacterTowardsTarget(Character* character, GameObject* target)
+{
+	//Find the path between the two points. max_distance == 1000 because its irellevant.
+	std::vector<Node*> Path = pathfinding_.Pathfind(character->GetGridNode(),
+		target->GetGridNode(), 1000);
+	if (Path.size() > 0) {
+		Node* node_position = nullptr;
+		do {
+			if (target->isOverlap()) {
+				node_position = Path[Path.size() - 1];
+			}
+			else if (Path.size() > 1) {
+				node_position = Path[Path.size() - 2];
+			}
+			Path.pop_back();
+		} while (node_position && !MoveCharacter(character, node_position));
+	}
 }
 
 Node* Grid::GridCollision(sf::Vector2f mouse_position)
@@ -58,7 +71,6 @@ Node* Grid::GridCollision(sf::Vector2f mouse_position)
 			return Grid_Pieces_[i]->GetGridNode();
 		}
 	}
-
 	return NULL;
 }
 
@@ -87,10 +99,10 @@ void Grid::CreateMap(std::string file_name)
 		if (row.size() > 2) {
 			int positionX = std::stoi(row[0]);
 			int positionY = std::stoi(row[1]);
-			sf::Texture* main_texture = Textures_[std::stoi(row[2])];
+			sf::Texture* main_texture = Main_Textures_[std::stoi(row[2])];
 			sf::Texture* sub_texture = NULL;
 			if (row.size() > 3) {
-				sub_texture = Textures_[std::stoi(row[3])];
+				sub_texture = Sub_Textures_[std::stoi(row[3])];
 			}
 			Node* node = pathfinding_.AddNode(sf::Vector2i(positionX, positionY));
 			Grid_Pieces_.push_back(new GridPiece(main_texture, sub_texture, node));
@@ -102,30 +114,8 @@ void Grid::RenderGridPieces(sf::RenderWindow* window)
 {
 	for (int i = 0; i < Grid_Pieces_.size(); i++) {
 		window->draw(*Grid_Pieces_[i]);
+		Grid_Pieces_[i]->Render(window);
 	}
-}
-
-void Grid::RenderNodes(sf::RenderWindow* window)
-{
-	pathfinding_.RenderNodes(window);
-}
-
-void Grid::RenderShowNodesButton(sf::RenderWindow* window)
-{
-	//Render the show nodes button.
-	if (show_nodes_button_) {
-		window->draw(*show_nodes_button_);
-		show_nodes_button_->RenderButtonText(window);
-	}
-}
-
-bool Grid::InvertShowNodes(sf::Vector2f mouse_pos)
-{
-	if (show_nodes_button_->Collision(mouse_pos)) {
-		pathfinding_.InvertShowNodes();
-		return true;
-	}
-	return false;
 }
 
 void Grid::SetGameObjectPositionOnGrid(GameObject* game_object, sf::Vector2i position_on_grid)
@@ -152,9 +142,10 @@ void Grid::SetGameObjectPositionOnGrid(GameObject* game_object, Node* target_nod
 	}
 }
 
-void Grid::LoadTexture(std::string texture_name)
+sf::Texture* Grid::LoadTexture(std::string texture_name)
 {
 	sf::Texture* texture = new sf::Texture();
 	texture->loadFromFile(texture_name);
-	Textures_.push_back(texture);
+	
+	return texture;
 }

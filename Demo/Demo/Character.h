@@ -14,6 +14,9 @@ public:
 	float GetHealth();
 	void AddMemory(std::string what_happened);
 	int GetMovement();
+	bool GetMoveable();
+	void SetMoveable(bool moveable);
+	void InvertMoveable();
 
 	void RenderMoveableArea(sf::RenderWindow* window);
 
@@ -24,4 +27,6 @@ protected:
 	float health_;
 	float max_health_;
 	int movement_ = 3;
+
+	bool show_movement_ = false;
 };

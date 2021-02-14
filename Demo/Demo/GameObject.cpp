@@ -10,3 +10,8 @@ Node* GameObject::GetGridNode()
 {
 	return grid_node_;
 }
+
+bool GameObject::isOverlap()
+{
+	return overlap_;
+}

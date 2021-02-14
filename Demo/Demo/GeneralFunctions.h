@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <SFML/Graphics.hpp>
 
 using namespace std;
 
@@ -13,5 +14,6 @@ public:
 	static string FormatReadInText(string s);
 	static int GetIntFromString(std::string s);
 	static float Lerp(float start, float end, float time);
+	static float DistanceBetweenTwoObjects(sf::Vector2i position1, sf::Vector2i position2);
 };
 

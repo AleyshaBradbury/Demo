@@ -43,6 +43,12 @@
     <Filter Include="Source Files\Sprites\Pathfinding">
       <UniqueIdentifier>{563d93a4-1c92-4b64-8147-6b5720041656}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GameMechanics">
+      <UniqueIdentifier>{f17ec1c0-51d9-465f-80fd-d497ed8d17b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameMechanics">
+      <UniqueIdentifier>{9b0a96df-79bf-43ff-af14-dd1a2f45044b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp">
@@ -96,6 +102,15 @@
     <ClCompile Include="Memories.cpp">
       <Filter>Source Files\Sprites\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="TurnManager.cpp">
+      <Filter>Source Files\GameMechanics</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h">
@@ -145,6 +160,15 @@
     </ClInclude>
     <ClInclude Include="Memories.h">
       <Filter>Header Files\Sprites\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="TurnManager.h">
+      <Filter>Header Files\GameMechanics</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

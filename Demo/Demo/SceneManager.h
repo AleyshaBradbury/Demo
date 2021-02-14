@@ -3,6 +3,7 @@ class SceneManager
 {
 public:
 	enum class Scene {
+		Menu,
 		Main
 	};
 

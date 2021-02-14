@@ -6,7 +6,9 @@
 #include "Input.h"
 #include "Grid.h"
 #include "SceneManager.h"
+#include "TurnManager.h"
 
+#include "MenuScene.h"
 #include "MainScene.h"
 
 //
@@ -23,6 +25,9 @@ SceneManager::Scene SceneManager::scene;
 //Grid static members.
 const float Grid::grid_spacing_ = 50.0f;
 
+//Turn Manager statuc members.
+TurnManager::Turn TurnManager::turn_ = TurnManager::Turn::Player;
+
 int main() {
 	sf::Vector2u window_size_(800, 800);
 	//Create the window.
@@ -34,7 +39,7 @@ int main() {
 	sf::Clock clock;
 
 	//Initialse SceneManager Object.
-	SceneManager::ChangeScene(SceneManager::Scene::Main);
+	SceneManager::ChangeScene(SceneManager::Scene::Menu);
 
 	//Initialise Input.
 	Input::Init();
@@ -44,6 +49,7 @@ int main() {
 	font.loadFromFile("fonts/consola.ttf");
 
 	//Initialise Scene Objects.
+	MenuScene menu_scene_(&window, &font);
 	MainScene main_scene_(&window, &font);
 
 	while (window.isOpen())
@@ -104,6 +110,10 @@ int main() {
 		float dt = clock.restart().asSeconds();
 
 		switch (SceneManager::GetScene()) {
+		case SceneManager::Scene::Menu:
+			menu_scene_.Update(dt);
+			menu_scene_.Render();
+			break;
 		case SceneManager::Scene::Main:
 			main_scene_.Update(dt);
 			main_scene_.Render();

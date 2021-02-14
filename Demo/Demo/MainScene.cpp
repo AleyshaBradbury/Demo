@@ -1,12 +1,12 @@
 #include "MainScene.h"
-#include "Input.h"
 #include <iostream>
 #include "Memories.h"
+#include "TurnManager.h"
+#include "GeneralFunctions.h"
 
-MainScene::MainScene(sf::RenderWindow* window, sf::Font* font)
+MainScene::MainScene(sf::RenderWindow* window, sf::Font* font) : 
+	Scene(window, font)
 {
-	window_ = window;
-
 	//Set up the view.
 	grid_view_.setSize((sf::Vector2f)window_->getSize());
 	grid_view_.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
@@ -66,9 +66,15 @@ MainScene::~MainScene()
 
 void MainScene::Update(float dt)
 {
-	switch (turn) {
-	case Turn::Player:
+	switch (TurnManager::turn_) {
+	case TurnManager::Turn::Player:
 		PlayerTurn(dt);
+		break;
+	case TurnManager::Turn::Enemy:
+		EnemyTurn(dt);
+		break;
+	case TurnManager::Turn::NPC:
+		NPCTurn(dt);
 		break;
 	}
 }
@@ -85,9 +91,18 @@ void MainScene::Render()
 
 	//Render the grid.
 	grid_.RenderGridPieces(window_);
-	if (selected_character_) {
-		selected_character_->RenderMoveableArea(window_);
+	
+	//Render moveable area for all characters.
+	for (int i = 0; i < Npcs_.size(); i++) {
+		Npcs_[i]->RenderMoveableArea(window_);
 	}
+
+	for (int i = 0; i < Enemies_.size(); i++) {
+		Enemies_[i]->RenderMoveableArea(window_);
+	}
+
+	player_->RenderMoveableArea(window_);
+	
 
 	//Render every npc.
 	for (int i = 0; i < Npcs_.size(); i++) {
@@ -108,26 +123,11 @@ void MainScene::Render()
 		window_->draw(*player_);
 	}
 
-	//Render the grids UI variables.
-	grid_.RenderNodes(window_);
-
 	//Reset View
 	window_->setView(window_->getDefaultView());
 
 	RenderUI();
 	EndDraw();
-}
-
-void MainScene::StartDraw()
-{
-	//Clear the window to black.
-	window_->clear(sf::Color::Black);
-}
-
-void MainScene::EndDraw()
-{
-	//Display the frame in the window.
-	window_->display();
 }
 
 void MainScene::RenderUI()
@@ -137,9 +137,10 @@ void MainScene::RenderUI()
 	//
 
 	//Render the end turn button.
-	window_->draw(*turn_button_);
-	turn_button_->RenderButtonText(window_);
-	grid_.RenderShowNodesButton(window_);
+	if (turn_manager_.turn_ == TurnManager::Turn::Player) {
+		window_->draw(*turn_button_);
+		turn_button_->RenderButtonText(window_);
+	}
 }
 
 void MainScene::PlayerTurn(float dt)
@@ -165,13 +166,66 @@ void MainScene::PlayerTurn(float dt)
 					Player_Memories[i].where_it_happened_->GetGridPosition().y << ") " <<
 					Player_Memories[i].turns_ago_ << " turns ago\n";
 			}
+			turn_manager_.IncrementTurn();
 		}
 		else if (node) {
 			CheckIfSpaceEmptyAndResolve(node, player_);
+			grid_view_.setCenter(player_->GetGridNode()->getPosition());
 		}
 		grid_.InvertShowNodes(window_->mapPixelToCoords(Input::GetMouse()));
 		Input::SetMouseLeftDown(false);
 	}
+}
+
+void MainScene::EnemyTurn(float dt)
+{
+	switch (turn_manager_.enemy_turn_)
+	{
+	case TurnManager::EnemyTurn::FindTarget:
+		//Find the closest target.
+		Enemies_[turn_num_]->SetTarget(FindClosestTarget(Enemies_[turn_num_]));
+		turn_manager_.IncrementEnemyTurn();
+		break;
+	case TurnManager::EnemyTurn::Movement:
+		if (Enemies_[turn_num_]->GetTarget()) {
+			grid_.MoveCharacterTowardsTarget(Enemies_[turn_num_], Enemies_[turn_num_]->GetTarget());
+		}
+		turn_manager_.IncrementEnemyTurn();
+		break;
+	case TurnManager::EnemyTurn::Attack:
+		turn_manager_.IncrementEnemyTurn();
+		break;
+	}
+	if (turn_manager_.enemy_turn_ == TurnManager::EnemyTurn::FindTarget) {
+		turn_num_++;
+	}
+	if (turn_num_ == Enemies_.size()) {
+		turn_manager_.IncrementTurn();
+		turn_num_ = 0;
+	}
+}
+
+//Find the character or place that is closest to the enemy.
+GameObject* MainScene::FindClosestTarget(Enemy* enemy)
+{
+	GameObject* closest_object = player_;
+	float shortest_distance = GeneralFunctions::DistanceBetweenTwoObjects(
+		enemy->GetGridNode()->GetGridPosition(), player_->GetGridNode()->GetGridPosition());
+
+	for (int i = 0; i < Npcs_.size(); i++) {
+		float distance = GeneralFunctions::DistanceBetweenTwoObjects(
+			enemy->GetGridNode()->GetGridPosition(), Npcs_[i]->GetGridNode()->GetGridPosition());
+		if (distance < shortest_distance) {
+			shortest_distance = distance;
+			closest_object = Npcs_[i];
+		}
+	}
+	return closest_object;
+}
+
+void MainScene::NPCTurn(float dt)
+{
+	turn_manager_.IncrementTurn();
 }
 
 //When clicking on a space to move, check if that space is empty and resolve from that.
@@ -180,6 +234,7 @@ void MainScene::CheckIfSpaceEmptyAndResolve(Node* node, Character* character)
 	//If the player is in the node selected.
 	if (player_->GetGridNode() == node) {
 		selected_character_ = player_;
+		player_->InvertMoveable();
 		return;
 	}
 
@@ -187,6 +242,7 @@ void MainScene::CheckIfSpaceEmptyAndResolve(Node* node, Character* character)
 	for (int i = 0; i < Npcs_.size(); i++) {
 		if (Npcs_[i]->GetGridNode() == node) {
 			selected_character_ = Npcs_[i];
+			Npcs_[i]->InvertMoveable();
 			return;
 		}
 	}
@@ -195,6 +251,7 @@ void MainScene::CheckIfSpaceEmptyAndResolve(Node* node, Character* character)
 	for (int i = 0; i < Enemies_.size(); i++) {
 		if (Enemies_[i]->GetGridNode() == node) {
 			selected_character_ = Enemies_[i];
+			Enemies_[i]->InvertMoveable();
 			return;
 		} 
 	}

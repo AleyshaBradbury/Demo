@@ -1,12 +1,13 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "Scene.h"
 #include "GameObject.h"
 #include "NPC.h"
 #include "Enemy.h"
 #include "Button.h"
 #include "Grid.h"
+#include "TurnManager.h"
 
-class MainScene
+class MainScene : public Scene
 {
 public:
 	MainScene(sf::RenderWindow* window, sf::Font* font);
@@ -15,32 +16,40 @@ public:
 	void Render();
 
 private:
-	enum class Turn {
-		Player,
-		Enemy
-	};
 	//Render functions
-	void StartDraw();
-	void EndDraw();
 	void RenderUI();
 	
 	void PlayerTurn(float dt);
+	void EnemyTurn(float dt);
+	GameObject* FindClosestTarget(Enemy* enemy);
+	void NPCTurn(float dt);
 
 	//Check if the space is empty and resolve actions based on that.
 	void CheckIfSpaceEmptyAndResolve(Node* node, Character* character);
 
-	//Main Variables
-	sf::RenderWindow* window_ = nullptr;
+	//The turn manager handles what factions turn it is and what phase an enemy is in.
+	TurnManager turn_manager_;
+	//The view of the grid so that the camera can be focused on the active character.
 	sf::View grid_view_;
-	Turn turn = Turn::Player;
 
+	//
 	//Character Variables
+	//
+
+	//The character that has been clicked on.
 	Character* selected_character_ = nullptr;
+	//The player character.
 	Character* player_ = nullptr;
+	//The enemy or npc integer.
+	int turn_num_ = 0;
+	//A vector of npcs that are alive.
 	std::vector<NPC*> Npcs_;
+	//A vector of enemies that are alive.
 	std::vector<Enemy*> Enemies_;
 
+	//Changes the turn from the players to the enemies.
 	Button* turn_button_ = nullptr; 
+	//The grid object.
 	Grid grid_;
 };
 
