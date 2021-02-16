@@ -115,6 +115,11 @@ float GeneralFunctions::Lerp(float x0, float x1, float t)
     return (1 - t) * x0 + t * x1;
 }
 
+sf::Vector2f GeneralFunctions::LerpVector2(sf::Vector2f x0, sf::Vector2f x1, float t)
+{
+    return (1 - t) * x0 + t * x1;
+}
+
 float GeneralFunctions::DistanceBetweenTwoObjects(sf::Vector2i position1, sf::Vector2i position2)
 {
     return sqrt(pow(position1.x - position2.x, 2) + pow(position1.y - position2.y, 2));

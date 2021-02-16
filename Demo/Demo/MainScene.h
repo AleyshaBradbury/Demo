@@ -16,7 +16,7 @@ public:
 	void Render();
 
 private:
-	//Render functions
+	//Render the UI.
 	void RenderUI();
 	
 	void PlayerTurn(float dt);

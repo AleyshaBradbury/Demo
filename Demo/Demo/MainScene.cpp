@@ -41,8 +41,6 @@ MainScene::MainScene(sf::RenderWindow* window, sf::Font* font) :
 	turn_button_ = new Button("End Turn", 
 		sf::Vector2f(window_->getSize().x - button_size.x - 10.0f, 10.0f),
 		button_size, font, 20);
-
-	grid_.InitialiseShowNodesButton(font);
 }
 
 MainScene::~MainScene()
@@ -66,16 +64,18 @@ MainScene::~MainScene()
 
 void MainScene::Update(float dt)
 {
-	switch (TurnManager::turn_) {
-	case TurnManager::Turn::Player:
-		PlayerTurn(dt);
-		break;
-	case TurnManager::Turn::Enemy:
-		EnemyTurn(dt);
-		break;
-	case TurnManager::Turn::NPC:
-		NPCTurn(dt);
-		break;
+	if (grid_.MovementAnimation(dt)) {
+		switch (TurnManager::turn_) {
+		case TurnManager::Turn::Player:
+			PlayerTurn(dt);
+			break;
+		case TurnManager::Turn::Enemy:
+			EnemyTurn(dt);
+			break;
+		case TurnManager::Turn::NPC:
+			NPCTurn(dt);
+			break;
+		}
 	}
 }
 
@@ -170,9 +170,7 @@ void MainScene::PlayerTurn(float dt)
 		}
 		else if (node) {
 			CheckIfSpaceEmptyAndResolve(node, player_);
-			grid_view_.setCenter(player_->GetGridNode()->getPosition());
 		}
-		grid_.InvertShowNodes(window_->mapPixelToCoords(Input::GetMouse()));
 		Input::SetMouseLeftDown(false);
 	}
 }
@@ -258,4 +256,5 @@ void MainScene::CheckIfSpaceEmptyAndResolve(Node* node, Character* character)
 
 	//If nobody is in the node selected then move to that node.
 	grid_.MoveCharacter(character, node);
+	grid_view_.setCenter(character->getPosition());
 }

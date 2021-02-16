@@ -3,6 +3,7 @@
 #include <queue>
 #include <sstream>
 #include <fstream>
+#include "GeneralFunctions.h"
 
 Grid::Grid()
 {
@@ -31,9 +32,9 @@ bool Grid::MoveCharacter(Character* character, Node* node)
 	if (character && node &&
 		std::find(character->Moveable_Nodes_.begin(), character->Moveable_Nodes_.end(),
 		node) != character->Moveable_Nodes_.end()) {
-		SetGameObjectPositionOnGrid(character, node);
-		pathfinding_.FindAvailableNodes(character);
-		character->AddMemory("Moved");
+		movement_nodes_ = pathfinding_.Pathfind(character->GetGridNode(), node);
+		moving_character_ = character;
+		previous_movement_node_ = character->GetGridNode();
 		return true;
 	}
 	return false;
@@ -62,6 +63,35 @@ void Grid::MoveCharacterTowardsTarget(Character* character, GameObject* target)
 			Path.pop_back();
 		} while (node_position && !MoveCharacter(character, node_position));
 	}
+}
+
+bool Grid::MovementAnimation(float dt)
+{
+	//If there is a character which should be moving.
+	if (moving_character_) {
+		if (movement_nodes_.size() > 0) {
+			movement_timer_ += dt;
+			moving_character_->setPosition(GeneralFunctions::LerpVector2(
+				previous_movement_node_->getPosition(),
+				movement_nodes_.front()->getPosition(),
+				movement_timer_ / max_movement_timer_));
+			if (movement_timer_ >= max_movement_timer_) {
+				movement_timer_ = 0.0f;
+				previous_movement_node_ = movement_nodes_.front();
+				movement_nodes_.erase(movement_nodes_.begin());
+			}
+		}
+		else {
+			//Move the character.
+			SetGameObjectPositionOnGrid(moving_character_, previous_movement_node_);
+			pathfinding_.FindAvailableNodes(moving_character_);
+			moving_character_->AddMemory("Moved");
+			moving_character_ = nullptr;
+			movement_timer_ = 0.0f;
+			return false;
+		}
+	}
+	return true;
 }
 
 Node* Grid::GridCollision(sf::Vector2f mouse_position)

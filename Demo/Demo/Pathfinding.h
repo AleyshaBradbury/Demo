@@ -10,7 +10,7 @@ public:
 	Pathfinding();
 	Node* AddNode(sf::Vector2i node_position);
 	void FindAvailableNodes(Character* character);
-	std::vector<Node*> Pathfind(Node* start_node, Node* end_node, int max_distance);
+	std::vector<Node*> Pathfind(Node* start_node, Node* end_node, int max_distance = 1000);
 	
 	Node* FindNodeByPosition(sf::Vector2i grid_position);
 	int FindNodeNumByPosition(sf::Vector2i grid_position);

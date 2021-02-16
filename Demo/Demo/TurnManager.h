@@ -20,7 +20,7 @@ public:
 
 public:
 	void IncrementTurn();
-	void StartTurn(Character* character);
+	void StartTurn(Character* character, sf::View* view);
 	void EndTurn(Character* character);
 
 	void IncrementEnemyTurn();

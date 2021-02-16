@@ -5,10 +5,11 @@ void TurnManager::IncrementTurn()
 	turn_ = Turn((int)turn_ + 1 == (int)Turn::Count ? 0 : (int)turn_ + 1);
 }
 
-void TurnManager::StartTurn(Character* character)
+void TurnManager::StartTurn(Character* character, sf::View* view)
 {
 	was_moveable_ = character->GetMoveable();
 	character->SetMoveable(true);
+	view->setCenter(character->getPosition());
 }
 
 void TurnManager::EndTurn(Character* character)
