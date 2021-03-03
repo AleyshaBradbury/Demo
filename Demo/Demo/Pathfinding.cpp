@@ -6,7 +6,7 @@ Pathfinding::Pathfinding()
 {
 }
 
-Node*  Pathfinding::AddNode(sf::Vector2i node_position)
+Node* Pathfinding::AddNode(sf::Vector2i node_position)
 {
 	//Create the new node.
 	Node* node = new Node(node_position);
@@ -150,7 +150,7 @@ std::vector<Node*> Pathfinding::Pathfind(Node* start_node, Node* end_node, int m
 					gScore.insert(std::pair<Node*, float>(neighbour, 1000));
 				}
 				//If currentG is better than previous g for the neighbour.
-				if (currentG < gScore[neighbour] && currentG < max_distance) {
+				if (currentG < gScore[neighbour] && currentG <= max_distance) {
 					Previous_Node[neighbour] = current;
 					//If there is not already an entry for that node then create it and set it.
 					gScore[neighbour] = h(neighbour->GetGridPosition(), end);
@@ -177,7 +177,7 @@ Node* Pathfinding::FindNodeByPosition(sf::Vector2i grid_position)
 			return Nodes_[i];
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 int Pathfinding::FindNodeNumByPosition(sf::Vector2i grid_position)

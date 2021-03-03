@@ -6,29 +6,7 @@ Character::Character(std::string name, float health)
 	name_ = name;
 	overlap_ = false;
 
-	ResetHealth();
-
 	setOrigin(getSize() / 2.0f);
-}
-
-void Character::ResetHealth()
-{
-	health_ = max_health_;
-}
-
-bool Character::SubtractHealth(float health)
-{
-	health_ -= health;
-	if (health_ <= 0.0f) {
-		delete this;
-		return true;
-	}
-	return false;
-}
-
-float Character::GetHealth()
-{
-	return health_;
 }
 
 void Character::AddMemory(std::string what_happened)

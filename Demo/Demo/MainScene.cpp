@@ -11,7 +11,29 @@ MainScene::MainScene(sf::RenderWindow* window, sf::Font* font) :
 	grid_view_.setSize((sf::Vector2f)window_->getSize());
 	grid_view_.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	grid_view_.setCenter(sf::Vector2f(0.0f, 0.0f));
-	
+
+	Init();
+
+	sf::Vector2f button_size(105.0f, 35.0f);
+	turn_button_ = new Button("End Turn", 
+		sf::Vector2f(window_->getSize().x - button_size.x - 10.0f, 10.0f),
+		button_size, font, 20);
+
+	grid_.AddLocation(sf::Vector2i(4, 4));
+}
+
+MainScene::~MainScene()
+{
+	delete turn_button_;
+	turn_button_ = NULL;
+
+	Release();
+}
+
+void MainScene::Init()
+{
+	Release();
+
 	//Set the values for the size of the grid pieces and the size of the characters.
 	float grid_spacing = Grid::grid_spacing_;
 	float character_size = grid_spacing / 5.0f * 4.0f;
@@ -36,18 +58,10 @@ MainScene::MainScene(sf::RenderWindow* window, sf::Font* font) :
 	Enemies_.back()->setFillColor(sf::Color::Red);
 	Enemies_.back()->setOrigin(character_size / 2.0f, character_size / 2.0f);
 	grid_.InitialiseCharacter(Enemies_.back(), sf::Vector2i(3, 3));
-
-	sf::Vector2f button_size(105.0f, 35.0f);
-	turn_button_ = new Button("End Turn", 
-		sf::Vector2f(window_->getSize().x - button_size.x - 10.0f, 10.0f),
-		button_size, font, 20);
 }
 
-MainScene::~MainScene()
+void MainScene::Release()
 {
-	delete turn_button_;
-	turn_button_ = NULL;
-
 	for (int i = 0; i < Enemies_.size(); i++) {
 		delete Enemies_.back();
 		Enemies_.pop_back();
@@ -62,9 +76,10 @@ MainScene::~MainScene()
 	player_ = NULL;
 }
 
-void MainScene::Update(float dt)
+bool MainScene::Update(float dt)
 {
-	if (grid_.MovementAnimation(dt)) {
+	Character* c = grid_.MovementAnimation(dt);
+	if (!c) {
 		switch (TurnManager::turn_) {
 		case TurnManager::Turn::Player:
 			PlayerTurn(dt);
@@ -77,6 +92,10 @@ void MainScene::Update(float dt)
 			break;
 		}
 	}
+	else {
+		grid_view_.setCenter(c->getPosition());
+	}
+	return false;
 }
 
 void MainScene::Render()
@@ -101,7 +120,12 @@ void MainScene::Render()
 		Enemies_[i]->RenderMoveableArea(window_);
 	}
 
-	player_->RenderMoveableArea(window_);
+	if (player_) {
+		player_->RenderMoveableArea(window_);
+	}
+
+	//Render the exclamation mark indicators for all locations on top of the moveable areas.
+	grid_.RenderLocationIndicators(window_);
 	
 
 	//Render every npc.
@@ -145,6 +169,10 @@ void MainScene::RenderUI()
 
 void MainScene::PlayerTurn(float dt)
 {
+	if (!player_) {
+		turn_manager_.IncrementTurn();
+		return;
+	}
 	if (Input::GetMouseLeftDown()) {
 		Node* node = grid_.GridCollision(window_->mapPixelToCoords(Input::GetMouse(), grid_view_));
 		//If the end turn button is pressed. 
@@ -173,6 +201,12 @@ void MainScene::PlayerTurn(float dt)
 		}
 		Input::SetMouseLeftDown(false);
 	}
+
+	//If the spacebar is pressed and the player is on a location, enter that location.
+	if (Input::GetKeyDown(sf::Keyboard::Space) && grid_.CheckIfLocation(player_->GetGridNode())) {
+		Input::SetKeyUp(sf::Keyboard::Space);
+		return;
+	}
 }
 
 void MainScene::EnemyTurn(float dt)
@@ -185,12 +219,19 @@ void MainScene::EnemyTurn(float dt)
 		turn_manager_.IncrementEnemyTurn();
 		break;
 	case TurnManager::EnemyTurn::Movement:
+		//Move towards the target.
 		if (Enemies_[turn_num_]->GetTarget()) {
 			grid_.MoveCharacterTowardsTarget(Enemies_[turn_num_], Enemies_[turn_num_]->GetTarget());
 		}
 		turn_manager_.IncrementEnemyTurn();
 		break;
 	case TurnManager::EnemyTurn::Attack:
+		if (grid_.CheckIfInRange(Enemies_[turn_num_]->GetGridNode(),
+			Enemies_[turn_num_]->GetTarget()->GetGridNode(), 1)) {
+			if (Enemies_[turn_num_]->GetTarget()->SubtractHealth(1)) {
+				DeleteDeadObject(Enemies_[turn_num_]->GetTarget());
+			}
+		}
 		turn_manager_.IncrementEnemyTurn();
 		break;
 	}
@@ -226,6 +267,31 @@ void MainScene::NPCTurn(float dt)
 	turn_manager_.IncrementTurn();
 }
 
+void MainScene::DeleteDeadObject(GameObject* target)
+{
+	if (target == player_) {
+		delete player_;
+		player_ = nullptr;
+		SceneManager::ChangeScene(SceneManager::Scene::Failure);
+		return;
+	}
+	for (int i = 0; i < Npcs_.size(); i++) {
+		if (target == Npcs_[i]) {
+			delete Npcs_[i];
+			Npcs_.erase(Npcs_.begin() + i);
+			return;
+		}
+	}
+
+	for (int i = 0; i < Enemies_.size(); i++) {
+		if (target == Enemies_[i]) {
+			delete Enemies_[i];
+			Enemies_.erase(Enemies_.begin() + i);
+			return;
+		}
+	}
+}
+
 //When clicking on a space to move, check if that space is empty and resolve from that.
 void MainScene::CheckIfSpaceEmptyAndResolve(Node* node, Character* character)
 {
@@ -256,5 +322,4 @@ void MainScene::CheckIfSpaceEmptyAndResolve(Node* node, Character* character)
 
 	//If nobody is in the node selected then move to that node.
 	grid_.MoveCharacter(character, node);
-	grid_view_.setCenter(character->getPosition());
 }

@@ -49,6 +49,12 @@
     <Filter Include="Source Files\GameMechanics">
       <UniqueIdentifier>{9b0a96df-79bf-43ff-af14-dd1a2f45044b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\TasksAndQuests">
+      <UniqueIdentifier>{3b731e26-1ceb-4de4-a2b5-405505798696}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TasksAndQuests">
+      <UniqueIdentifier>{3566fabe-02c5-45c0-9663-d80b6f0ac999}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp">
@@ -111,6 +117,15 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="FailureScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Location.cpp">
+      <Filter>Source Files\TasksAndQuests</Filter>
+    </ClCompile>
+    <ClCompile Include="LocationScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h">
@@ -168,6 +183,15 @@
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="FailureScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Location.h">
+      <Filter>Header Files\TasksAndQuests</Filter>
+    </ClInclude>
+    <ClInclude Include="LocationScene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>

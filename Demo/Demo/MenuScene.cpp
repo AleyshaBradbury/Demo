@@ -11,13 +11,15 @@ MenuScene::MenuScene(sf::RenderWindow* window, sf::Font* font) :
 		button_size, font, 50, sf::Vector2f(30.0f, 5.0f));
 }
 
-void MenuScene::Update(float dt)
+bool MenuScene::Update(float dt)
 {
 	if (Input::GetMouseLeftDown() &&
 		to_main_button_->Collision(window_->mapPixelToCoords(Input::GetMouse()))) {
 		Input::SetMouseLeftDown(false);
 		SceneManager::ChangeScene(SceneManager::Scene::Main);
+		return true;
 	}
+	return false;
 }
 
 void MenuScene::Render()

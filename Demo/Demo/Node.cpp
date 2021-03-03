@@ -1,5 +1,6 @@
 #include "Node.h"
 #include "Grid.h"
+#include "GridPiece.h"
 
 Node::Node(sf::Vector2i grid_position)
 {
@@ -24,6 +25,16 @@ Node::Node(sf::Vector2i grid_position)
 void Node::RenderMoveable(sf::RenderWindow* window)
 {
 	window->draw(moveable_);
+}
+
+void Node::SetGridPiece(GridPiece* grid_piece)
+{
+	grid_piece_ = grid_piece;
+}
+
+GridPiece* Node::GetGridPiece()
+{
+	return grid_piece_;
 }
 
 sf::Vector2i Node::GetGridPosition()

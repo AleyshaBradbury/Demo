@@ -4,14 +4,17 @@
 #include <sstream>
 #include <fstream>
 #include "GeneralFunctions.h"
+#include "SceneManager.h"
 
 Grid::Grid()
 {
+	location_texture_.loadFromFile("gfx/exclamationMark.png");
+
 	Main_Textures_.push_back(LoadTexture("gfx/grassyPlane.png"));
 	Main_Textures_.push_back(LoadTexture("gfx/sandyPlane.png"));
 	Main_Textures_.push_back(LoadTexture("gfx/stonePlane.png"));
-	Sub_Textures_.push_back(LoadTexture("gfx/hut.png"));
-	Sub_Textures_.push_back(LoadTexture("gfx/loneMountain.png"));
+	Sub_Textures_.insert(std::pair<string, sf::Texture*>("hut", LoadTexture("gfx/hut.png")));
+	Sub_Textures_.insert(std::pair<string, sf::Texture*>("mountain", LoadTexture("gfx/loneMountain.png")));
 
 	CreateMap("maps/test.csv");
 }
@@ -65,7 +68,7 @@ void Grid::MoveCharacterTowardsTarget(Character* character, GameObject* target)
 	}
 }
 
-bool Grid::MovementAnimation(float dt)
+Character* Grid::MovementAnimation(float dt)
 {
 	//If there is a character which should be moving.
 	if (moving_character_) {
@@ -88,10 +91,9 @@ bool Grid::MovementAnimation(float dt)
 			moving_character_->AddMemory("Moved");
 			moving_character_ = nullptr;
 			movement_timer_ = 0.0f;
-			return false;
 		}
 	}
-	return true;
+	return moving_character_;
 }
 
 Node* Grid::GridCollision(sf::Vector2f mouse_position)
@@ -131,13 +133,49 @@ void Grid::CreateMap(std::string file_name)
 			int positionY = std::stoi(row[1]);
 			sf::Texture* main_texture = Main_Textures_[std::stoi(row[2])];
 			sf::Texture* sub_texture = NULL;
-			if (row.size() > 3) {
-				sub_texture = Sub_Textures_[std::stoi(row[3])];
+			if (row.size() > 3 && Sub_Textures_.find(row[3]) != Sub_Textures_.end()) {
+				sub_texture = Sub_Textures_[row[3]];
 			}
 			Node* node = pathfinding_.AddNode(sf::Vector2i(positionX, positionY));
 			Grid_Pieces_.push_back(new GridPiece(main_texture, sub_texture, node));
+			node->SetGridPiece(Grid_Pieces_.back());
 		}
 	}
+}
+
+void Grid::AddLocation(sf::Vector2i node_position)
+{
+	Node* node = pathfinding_.FindNodeByPosition(node_position);
+	AddLocation(node);
+}
+
+void Grid::AddLocation(Node* node)
+{
+	if (node) {
+		node->GetGridPiece()->SetLocation(new Location(node, &location_texture_));
+	}
+}
+
+bool Grid::CheckIfLocation(Node* current_node)
+{
+	Location* location = current_node->GetGridPiece()->GetLocation();
+	if (location) {
+		SceneManager::ChangeScene(SceneManager::Scene::Location);
+		SceneManager::SetLocation(location);
+		return true;
+	}
+	return false;
+}
+
+bool Grid::CheckIfInRange(Node* node1, Node* node2, int max_distance)
+{
+	float distanceX = abs(node1->GetGridPosition().x - node2->GetGridPosition().x);
+	float distanceY = abs(node1->GetGridPosition().y - node2->GetGridPosition().y);
+
+	if (distanceX + distanceY <= max_distance) {
+		return true;
+	}
+	return false;
 }
 
 void Grid::RenderGridPieces(sf::RenderWindow* window)
@@ -145,6 +183,16 @@ void Grid::RenderGridPieces(sf::RenderWindow* window)
 	for (int i = 0; i < Grid_Pieces_.size(); i++) {
 		window->draw(*Grid_Pieces_[i]);
 		Grid_Pieces_[i]->Render(window);
+	}
+}
+
+void Grid::RenderLocationIndicators(sf::RenderWindow* window)
+{
+	for (int i = 0; i < Grid_Pieces_.size(); i++) {
+		Location* location = Grid_Pieces_[i]->GetLocation();
+		if (location) {
+			location->RenderIndicatorOnMap(window);
+		}
 	}
 }
 

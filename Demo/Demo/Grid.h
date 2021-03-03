@@ -4,6 +4,7 @@
 #include "Pathfinding.h"
 #include "GridPiece.h"
 #include "Character.h"
+#include <map>
 
 class Grid
 {
@@ -16,14 +17,20 @@ public:
 	bool MoveCharacter(Character* character, Node* node);
 	void MoveCharacter(Character* character, sf::Vector2i node_position);
 	void MoveCharacterTowardsTarget(Character* character, GameObject* target);
-	bool MovementAnimation(float dt);
+	Character* MovementAnimation(float dt);
 	Node* GridCollision(sf::Vector2f mouse_position);
+	bool CheckIfInRange(Node* node1, Node* node2, int max_distance);
+
 	void CreateMap(std::string file_name);
+	void AddLocation(sf::Vector2i node_position);
+	void AddLocation(Node* node);
+	bool CheckIfLocation(Node* current_node);
 
 	void SetGameObjectPositionOnGrid(GameObject* game_object, sf::Vector2i position_on_grid);
 	void SetGameObjectPositionOnGrid(GameObject* game_object, Node* target_node);
 
 	void RenderGridPieces(sf::RenderWindow* window);
+	void RenderLocationIndicators(sf::RenderWindow* window);
 	
 	//Static variables.
 	//The distance between nodes/size of grid pieces.
@@ -38,10 +45,12 @@ private:
 
 	//Grid piece vector.
 	std::vector<GridPiece*> Grid_Pieces_;
+	//The texture for locations.
+	sf::Texture location_texture_;
 	//A vector of all of the main grid piece textures.
 	std::vector<sf::Texture*> Main_Textures_;
 	//A vector of all of the sub textures for the grid pieces.
-	std::vector<sf::Texture*> Sub_Textures_;
+	std::map<std::string, sf::Texture*> Sub_Textures_;
 
 	//Pathfinding object.
 	Pathfinding pathfinding_;

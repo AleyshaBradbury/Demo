@@ -15,3 +15,22 @@ bool GameObject::isOverlap()
 {
 	return overlap_;
 }
+
+void GameObject::ResetHealth()
+{
+	health_ = max_health_;
+}
+
+bool GameObject::SubtractHealth(float health)
+{
+	health_ -= health;
+	if (health_ <= 0.0f) {
+		return true;
+	}
+	return false;
+}
+
+float GameObject::GetHealth()
+{
+	return health_;
+}

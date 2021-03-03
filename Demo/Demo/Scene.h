@@ -7,7 +7,7 @@ class Scene
 {
 public:
 	Scene(sf::RenderWindow* window, sf::Font* font);
-	virtual void Update(float dt) = 0;
+	virtual bool Update(float dt) = 0;
 	virtual void Render() = 0;
 
 protected:

@@ -10,6 +10,8 @@
 
 #include "MenuScene.h"
 #include "MainScene.h"
+#include "LocationScene.h"
+#include "FailureScene.h"
 
 //
 //Declaring Static Members
@@ -20,7 +22,8 @@ bool Input::keys[256];
 Input::Mouse Input::mouse;
 
 //SceneManager static members.
-SceneManager::Scene SceneManager::scene;
+SceneManager::Scene SceneManager::scene_;
+Location* SceneManager::current_location_;
 
 //Grid static members.
 const float Grid::grid_spacing_ = 50.0f;
@@ -51,6 +54,8 @@ int main() {
 	//Initialise Scene Objects.
 	MenuScene menu_scene_(&window, &font);
 	MainScene main_scene_(&window, &font);
+	FailureScene failure_scene_(&window, &font);
+	LocationScene location_scene_(&window, &font);
 
 	while (window.isOpen())
 	{
@@ -111,13 +116,22 @@ int main() {
 
 		switch (SceneManager::GetScene()) {
 		case SceneManager::Scene::Menu:
-			menu_scene_.Update(dt);
+			if (menu_scene_.Update(dt)) {
+				main_scene_.Init();
+			}
 			menu_scene_.Render();
 			break;
 		case SceneManager::Scene::Main:
 			main_scene_.Update(dt);
 			main_scene_.Render();
 			break;
+		case SceneManager::Scene::Location:
+			location_scene_.Update(dt);
+			location_scene_.Render();
+			break;
+		case SceneManager::Scene::Failure:
+			failure_scene_.Update(dt);
+			failure_scene_.Render();
 		}
 	}
 }

@@ -12,7 +12,9 @@ class MainScene : public Scene
 public:
 	MainScene(sf::RenderWindow* window, sf::Font* font);
 	~MainScene();
-	void Update(float dt);
+	void Init();
+	void Release();
+	bool Update(float dt);
 	void Render();
 
 private:
@@ -23,6 +25,8 @@ private:
 	void EnemyTurn(float dt);
 	GameObject* FindClosestTarget(Enemy* enemy);
 	void NPCTurn(float dt);
+
+	void DeleteDeadObject(GameObject* target);
 
 	//Check if the space is empty and resolve actions based on that.
 	void CheckIfSpaceEmptyAndResolve(Node* node, Character* character);

@@ -36,6 +36,28 @@ bool GridPiece::Collision(sf::Vector2f mouse_position)
 	return false;
 }
 
+bool GridPiece::SetLocation(Location* location)
+{
+	if (location_) {
+		return false;
+	}
+	location_ = location;
+	return true;
+}
+
+Location* GridPiece::GetLocation()
+{
+	return location_;
+}
+
+bool GridPiece::EnterLocation()
+{
+	if (location_) {
+		return true;
+	}
+	return false;
+}
+
 void GridPiece::Render(sf::RenderWindow* window)
 {
 	if (added_.getTexture()) {
