@@ -1,6 +1,8 @@
 #include "Location.h"
 #include "SceneManager.h"
 #include "Grid.h"
+#include "Node.h"
+#include "GeneralVariables.h"
 
 Location::Location(Node* node, sf::Texture* texture)
 {
@@ -14,11 +16,11 @@ void Location::Update(float dt)
 {
 }
 
-void Location::Render(sf::RenderWindow* window)
+void Location::Render()
 {
 }
 
-void Location::RenderIndicatorOnMap(sf::RenderWindow* window)
+void Location::RenderIndicatorOnMap()
 {
-	window->draw(indicator_);
+	GeneralVariables::window_.draw(indicator_);
 }

@@ -5,7 +5,7 @@
 class MenuScene : public Scene
 {
 public:
-	MenuScene(sf::RenderWindow* window, sf::Font* font);
+	MenuScene();
 	bool Update(float dt);
 	void Render();
 

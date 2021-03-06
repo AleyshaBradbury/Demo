@@ -1,11 +1,19 @@
 #include "NPC.h"
 #include <iostream>
 #include <math.h>
+#include "Grid.h"
 
-NPC::NPC(std::string name, float health) : Character(name, health)
+NPC::NPC(std::string name, float health, CharacterManager* character_manager) : 
+	Character(name, health, character_manager)
 {
 	std::cout << name << ":\n";
 	AddNeed("Food");
+}
+
+GameObject* NPC::DoAction(float dt, Grid* grid)
+{
+	TurnManager::DetermineCharacterTurn();
+	return nullptr;
 }
 
 void NPC::IncrementNeeds()

@@ -1,18 +1,16 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Location.h"
 
+class Character;
 class GridPiece;
 
 class Node : public sf::RectangleShape
 {
 public:
-	Node(sf::Vector2i grid_position);
-	void RenderMoveable(sf::RenderWindow* window);
+	Node(sf::Vector2i grid_position, sf::Texture* main_texture, sf::Texture* added_texture);
+	void RenderMoveable();
 
-	//Set the grid piece the node is attatched to.
-	void SetGridPiece(GridPiece* grid_piece);
-	//Get the grid piece attatched to the node.
-	GridPiece* GetGridPiece();
 	//Get the position of the node in the grid.
 	sf::Vector2i GetGridPosition();
 	void AddNeighbour(Node* node, int i);
@@ -20,8 +18,17 @@ public:
 	int GetNumNeighbours();
 	int GetDistance();
 
+	bool Collision(sf::Vector2f mouse_position);
+	bool SetLocation(Location* location);
+	Location* GetLocation();
+	bool EnterLocation();
+
+	void Render();
+
+	void SetCharacterOnTile(Character* character);
+	Character* GetCharacterOnTile();
+
 private:
-	GridPiece* grid_piece_ = nullptr;
 	//The position of the node in the grid.
 	sf::Vector2i grid_position_ = sf::Vector2i(0.0f, 0.0f);
 	//The nodes neighboring this one.
@@ -30,5 +37,15 @@ private:
 	int num_neighbours_ = 0;
 	int distance = 1;
 
+	Character* character_on_tile_ = nullptr;
+
+	//The added texture on top of the background texture.
+	sf::RectangleShape added_;
 	sf::RectangleShape moveable_;
+	//The hitbox for clicking on the piece;
+	sf::FloatRect hitbox_;
+
+	Location* location_ = nullptr;
+
+	
 };

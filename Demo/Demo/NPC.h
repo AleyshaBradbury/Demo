@@ -5,7 +5,8 @@
 class NPC : public Character
 {
 public:
-	NPC(std::string name, float health);
+	NPC(std::string name, float health, CharacterManager* character_manager);
+	GameObject* DoAction(float dt, Grid* grid);
 	void IncrementNeeds();
 
 private:

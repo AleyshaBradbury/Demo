@@ -1,14 +1,15 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "Node.h"
+
+class Node;
 
 class Location
 {
 public:
 	Location(Node* node, sf::Texture* texture);
 	void Update(float dt);
-	void Render(sf::RenderWindow* window);
-	void RenderIndicatorOnMap(sf::RenderWindow* window);
+	void Render();
+	void RenderIndicatorOnMap();
 
 private:
 	sf::RectangleShape indicator_;

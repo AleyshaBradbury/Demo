@@ -2,16 +2,15 @@
 #include "Input.h"
 #include "Button.h"
 #include "Pathfinding.h"
-#include "GridPiece.h"
-#include "Character.h"
 #include <map>
+
+class Enemy;
 
 class Grid
 {
 public:
 	Grid();
 	~Grid();
-
 
 	void InitialiseCharacter(Character* character, sf::Vector2i node_position);
 	bool MoveCharacter(Character* character, Node* node);
@@ -28,13 +27,21 @@ public:
 
 	void SetGameObjectPositionOnGrid(GameObject* game_object, sf::Vector2i position_on_grid);
 	void SetGameObjectPositionOnGrid(GameObject* game_object, Node* target_node);
+	void SetCharacterPositionOnGrid(Character* character, sf::Vector2i position_on_grid);
+	void SetCharacterPositionOnGrid(Character* character, Node* target_node);
 
-	void RenderGridPieces(sf::RenderWindow* window);
-	void RenderLocationIndicators(sf::RenderWindow* window);
+	//Find closest target for the enemy.
+	GameObject* FindClosestTarget(Enemy* enemy);
+
+	void RenderGridPieces();
+	void RenderLocationIndicators();
 	
 	//Static variables.
 	//The distance between nodes/size of grid pieces.
 	static const float grid_spacing_;
+
+	//The view of the grid so that the camera can be focused on the active character.
+	static sf::View grid_view_;
 
 private:
 	sf::Texture* LoadTexture(std::string texture_name);
@@ -43,8 +50,8 @@ private:
 	//Grid piece variables.
 	//
 
-	//Grid piece vector.
-	std::vector<GridPiece*> Grid_Pieces_;
+	//Nodes vector.
+	std::vector<Node*> Nodes_;
 	//The texture for locations.
 	sf::Texture location_texture_;
 	//A vector of all of the main grid piece textures.

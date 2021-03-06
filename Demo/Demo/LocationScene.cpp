@@ -1,7 +1,6 @@
 #include "LocationScene.h"
 
-LocationScene::LocationScene(sf::RenderWindow* window, sf::Font* font) :
-	Scene(window, font)
+LocationScene::LocationScene()
 {
 }
 

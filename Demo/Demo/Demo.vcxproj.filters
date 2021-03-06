@@ -96,9 +96,6 @@
     <ClCompile Include="Grid.cpp">
       <Filter>Source Files\Sprites\Pathfinding</Filter>
     </ClCompile>
-    <ClCompile Include="GridPiece.cpp">
-      <Filter>Source Files\Sprites\Pathfinding</Filter>
-    </ClCompile>
     <ClCompile Include="Line.cpp">
       <Filter>Source Files\Sprites\Pathfinding</Filter>
     </ClCompile>
@@ -125,6 +122,15 @@
     </ClCompile>
     <ClCompile Include="LocationScene.cpp">
       <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Sprites\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneralVariables.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterManager.cpp">
+      <Filter>Source Files\Sprites\Characters</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,9 +170,6 @@
     <ClInclude Include="Grid.h">
       <Filter>Header Files\Sprites\Pathfinding</Filter>
     </ClInclude>
-    <ClInclude Include="GridPiece.h">
-      <Filter>Header Files\Sprites\Pathfinding</Filter>
-    </ClInclude>
     <ClInclude Include="Line.h">
       <Filter>Header Files\Sprites\Pathfinding</Filter>
     </ClInclude>
@@ -193,6 +196,15 @@
     </ClInclude>
     <ClInclude Include="LocationScene.h">
       <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Sprites\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneralVariables.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterManager.h">
+      <Filter>Header Files\Sprites\Character</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

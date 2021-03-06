@@ -4,7 +4,7 @@
 class LocationScene : public Scene
 {
 public:
-	LocationScene(sf::RenderWindow* window, sf::Font* font);
+	LocationScene();
 	bool Update(float dt);
 	void Render();
 

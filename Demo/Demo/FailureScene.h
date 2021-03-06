@@ -5,7 +5,7 @@
 class FailureScene : public Scene
 {
 public:
-	FailureScene(sf::RenderWindow* window, sf::Font* font);
+	FailureScene();
 	bool Update(float dt);
 	void Render();
 private:

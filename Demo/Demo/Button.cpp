@@ -1,12 +1,13 @@
 #include "Button.h"
+#include "GeneralVariables.h"
 
 Button::Button(std::string nameText_, sf::Vector2f position,
-	sf::Vector2f size, sf::Font* font, float fontSize, sf::Vector2f textPosition, 
+	sf::Vector2f size, float fontSize, sf::Vector2f textPosition, 
 	sf::Color color, sf::Color textColor)
 {
 	nameText.setString(nameText_);
 	nameText.setCharacterSize(fontSize);
-	nameText.setFont(*font);
+	nameText.setFont(GeneralVariables::font_);
 	nameText.setFillColor(textColor);
 	nameText.setPosition(position.x + textPosition.x, position.y + textPosition.y);
 
@@ -28,9 +29,9 @@ bool Button::Collision(sf::Vector2f mousePosition)
 	return false;
 }
 
-void Button::RenderButtonText(sf::RenderWindow* window)
+void Button::RenderButtonText()
 {
-	window->draw(nameText);
+	GeneralVariables::window_.draw(nameText);
 }
 
 void Button::SetPosition(sf::Vector2f position_)

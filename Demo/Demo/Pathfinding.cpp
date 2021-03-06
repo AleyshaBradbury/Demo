@@ -2,25 +2,18 @@
 #include "Grid.h"
 #include <iostream>
 
-Pathfinding::Pathfinding()
+Node* Pathfinding::SetupNode(Node* node, std::vector<Node*> Nodes_)
 {
-}
-
-Node* Pathfinding::AddNode(sf::Vector2i node_position)
-{
-	//Create the new node.
-	Node* node = new Node(node_position);
-
 	//Make a map of all the positions around the node.
 	std::unordered_map<int, sf::Vector2i> Surrounding_positions;
 	Surrounding_positions.insert(std::pair<int, sf::Vector2i>
-		(0, sf::Vector2i(0, -1) + node_position));
+		(0, sf::Vector2i(0, -1) + node->GetGridPosition()));
 	Surrounding_positions.insert(std::pair<int, sf::Vector2i>
-		(1, sf::Vector2i(1, 0) + node_position));
+		(1, sf::Vector2i(1, 0) + node->GetGridPosition()));
 	Surrounding_positions.insert(std::pair<int, sf::Vector2i>
-		(2, sf::Vector2i(0, 1) + node_position));
+		(2, sf::Vector2i(0, 1) + node->GetGridPosition()));
 	Surrounding_positions.insert(std::pair<int, sf::Vector2i>
-		(3, sf::Vector2i(-1, 0) + node_position));
+		(3, sf::Vector2i(-1, 0) + node->GetGridPosition()));
 
 	//If a node neighbours the new node, make them neighbours.
 	for (int i = 0; i < Nodes_.size(); i++) {
@@ -45,7 +38,7 @@ Node* Pathfinding::AddNode(sf::Vector2i node_position)
 	return node;
 }
 
-void Pathfinding::FindAvailableNodes(Character* character)
+void Pathfinding::FindAvailableNodes(Character* character, std::vector<Node*> Nodes_)
 {
 	//Empty the moveable nodes variable.
 	character->Moveable_Nodes_.clear();
@@ -54,12 +47,12 @@ void Pathfinding::FindAvailableNodes(Character* character)
 	character->Moveable_Nodes_.push_back(character->GetGridNode());
 	//Set up a vector of nodes that need to be checked.
 	Nodes_To_Be_Checked_ = Nodes_;
-	while (Nodes_To_Be_Checked_.size() > 0.0f) {
+	while (Nodes_To_Be_Checked_.size() > 0) {
 		//Pathfind to current node.
 		Node* node = Nodes_To_Be_Checked_.back();
 		Nodes_To_Be_Checked_.pop_back();
 		std::vector<Node*> Path = Pathfind(character->GetGridNode(), node, 
-			character->GetMovement());
+			Nodes_, character->GetMovement());
 
 		if (Path.size() > 0) {
 			character->Moveable_Nodes_.push_back(node);
@@ -81,7 +74,7 @@ void Pathfinding::FindAvailableNodes(Character* character)
 	}
 }
 
-std::vector<Node*> Pathfinding::Pathfind(Node* start_node, Node* end_node, int max_distance)
+std::vector<Node*> Pathfinding::Pathfind(Node* start_node, Node* end_node, std::vector<Node*> Nodes_, int max_distance)
 {
 
 	//
@@ -170,7 +163,7 @@ std::vector<Node*> Pathfinding::Pathfind(Node* start_node, Node* end_node, int m
 	return Path;
 }
 
-Node* Pathfinding::FindNodeByPosition(sf::Vector2i grid_position)
+Node* Pathfinding::FindNodeByPosition(sf::Vector2i grid_position, std::vector<Node*> Nodes_)
 {
 	for (int i = 0; i < Nodes_.size(); i++) {
 		if (Nodes_[i]->GetGridPosition() == grid_position) {
@@ -180,7 +173,7 @@ Node* Pathfinding::FindNodeByPosition(sf::Vector2i grid_position)
 	return nullptr;
 }
 
-int Pathfinding::FindNodeNumByPosition(sf::Vector2i grid_position)
+int Pathfinding::FindNodeNumByPosition(sf::Vector2i grid_position, std::vector<Node*> Nodes_)
 {
 	for (int i = 0; i < Nodes_.size(); i++) {
 		if (Nodes_[i]->GetGridPosition() == grid_position) {

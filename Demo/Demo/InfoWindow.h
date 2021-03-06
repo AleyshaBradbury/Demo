@@ -8,9 +8,9 @@ using namespace std;
 class InfoWindow : public sf::RectangleShape
 {
 public:
-	InfoWindow(sf::RenderWindow* window, sf::Font* font);
+	InfoWindow();
 	bool Collsion(sf::Vector2f mousePosition);
-	void Render(sf::RenderWindow* window);
+	void Render();
 
 	bool isAlive();
 	void SetAlive(bool a);

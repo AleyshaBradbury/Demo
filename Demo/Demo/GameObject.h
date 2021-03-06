@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Node.h"
+#include "GeneralVariables.h"
 
 class GameObject : public sf::RectangleShape
 {

@@ -7,6 +7,7 @@
 #include "Grid.h"
 #include "SceneManager.h"
 #include "TurnManager.h"
+#include "GeneralVariables.h"
 
 #include "MenuScene.h"
 #include "MainScene.h"
@@ -27,14 +28,21 @@ Location* SceneManager::current_location_;
 
 //Grid static members.
 const float Grid::grid_spacing_ = 50.0f;
+sf::View Grid::grid_view_;
 
-//Turn Manager statuc members.
+//Turn Manager static members.
 TurnManager::Turn TurnManager::turn_ = TurnManager::Turn::Player;
+int TurnManager::turn_num_ = 0;
+Character* TurnManager::character_turn_ = nullptr;
+CharacterManager* TurnManager::character_manager_ = nullptr;
+bool TurnManager::was_moveable_ = false;
+
+//General Variables static members.
+sf::Vector2u window_size_(800, 800);
+sf::RenderWindow GeneralVariables::window_(sf::VideoMode(window_size_.x, window_size_.y), "Demo");
+sf::Font GeneralVariables::font_;
 
 int main() {
-	sf::Vector2u window_size_(800, 800);
-	//Create the window.
-	sf::RenderWindow window(sf::VideoMode(window_size_.x, window_size_.y), "Demo");
 
 	srand((int)time(NULL));
 
@@ -47,28 +55,27 @@ int main() {
 	//Initialise Input.
 	Input::Init();
 
-	//Initialise Font Object.
-	sf::Font font;
-	font.loadFromFile("fonts/consola.ttf");
+	
+	GeneralVariables::font_.loadFromFile("fonts/consola.ttf");
 
 	//Initialise Scene Objects.
-	MenuScene menu_scene_(&window, &font);
-	MainScene main_scene_(&window, &font);
-	FailureScene failure_scene_(&window, &font);
-	LocationScene location_scene_(&window, &font);
+	MenuScene menu_scene_;
+	MainScene main_scene_;
+	FailureScene failure_scene_;
+	LocationScene location_scene_;
 
-	while (window.isOpen())
+	while (GeneralVariables::window_.isOpen())
 	{
 		sf::Event event;
-		while (window.pollEvent(event))
+		while (GeneralVariables::window_.pollEvent(event))
 		{
 			switch (event.type)
 			{
 			case sf::Event::Closed:
-				window.close();
+				GeneralVariables::window_.close();
 				break;
 			case sf::Event::Resized:
-				window.setSize(window_size_);
+				GeneralVariables::window_.setSize(window_size_);
 				break;
 			case sf::Event::KeyPressed:
 				// update input class

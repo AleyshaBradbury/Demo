@@ -1,5 +1,7 @@
 #pragma once
-#include "Character.h"
+
+class CharacterManager;
+class Character;
 
 class TurnManager
 {
@@ -11,26 +13,18 @@ public:
 		Count
 	};
 
-	enum class EnemyTurn {
-		FindTarget,
-		Movement,
-		Attack,
-		Count
-	};
-
 public:
-	void IncrementTurn();
-	void StartTurn(Character* character, sf::View* view);
-	void EndTurn(Character* character);
-
-	void IncrementEnemyTurn();
+	static void StartTurn(Character* character);
+	static void EndTurn(Character* character);
+	static void DetermineCharacterTurn();
 
 	//Which factions turn is the game on?
 	static Turn turn_;
-	EnemyTurn enemy_turn_ = EnemyTurn::FindTarget;
+	//The enemy or npc integer.
+	static int turn_num_;
+	static bool was_moveable_;
 
-private:
-	bool was_moveable_ = false;
-
+	static Character* character_turn_;
+	static CharacterManager* character_manager_;
 };
 

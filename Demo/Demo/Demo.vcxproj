@@ -141,11 +141,12 @@
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="CharacterManager.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FailureScene.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeneralFunctions.cpp" />
-    <ClCompile Include="GridPiece.cpp" />
+    <ClCompile Include="GeneralVariables.cpp" />
     <ClCompile Include="InfoWindow.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Line.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Pathfinding.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="TurnManager.cpp" />
@@ -166,11 +168,12 @@
   <ItemGroup>
     <ClInclude Include="Button.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="CharacterManager.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FailureScene.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeneralFunctions.h" />
-    <ClInclude Include="GridPiece.h" />
+    <ClInclude Include="GeneralVariables.h" />
     <ClInclude Include="InfoWindow.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Line.h" />
@@ -183,6 +186,7 @@
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Pathfinding.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="TurnManager.h" />
