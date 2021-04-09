@@ -7,9 +7,11 @@
 #include "SceneManager.h"
 #include "Enemy.h"
 #include "GeneralVariables.h"
+#include "TaskLocation.h"
 
-Grid::Grid()
+Grid::Grid(LocationManager* location_manager)
 {
+	location_manager_ = location_manager;
 	location_texture_.loadFromFile("gfx/exclamationMark.png");
 
 	Main_Textures_.push_back(LoadTexture("gfx/grassyPlane.png"));
@@ -51,7 +53,7 @@ void Grid::MoveCharacter(Character* character, sf::Vector2i node_position)
 	MoveCharacter(character, node);
 }
 
-void Grid::MoveCharacterTowardsTarget(Character* character, GameObject* target)
+void Grid::MoveCharacterTowardsTarget(Character* character, GridObject* target)
 {
 	//Find the path between the two points. max_distance == 1000 because its irellevant.
 	std::vector<Node*> Path = pathfinding_.Pathfind(character->GetGridNode(),
@@ -154,7 +156,11 @@ void Grid::AddLocation(sf::Vector2i node_position)
 void Grid::AddLocation(Node* node)
 {
 	if (node) {
-		node->SetLocation(new Location(node, &location_texture_));
+		TaskLocation* task_location = new TaskLocation(node, &location_texture_);
+		Task* task = new Task("Chop Down Tree", "wood", 1);
+		task_location->AddAction(task);
+		node->SetLocation(task_location);
+		location_manager_->AddLocation(node->GetLocation());
 	}
 }
 
@@ -180,9 +186,9 @@ bool Grid::CheckIfInRange(Node* node1, Node* node2, int max_distance)
 	return false;
 }
 
-GameObject* Grid::FindClosestTarget(Enemy* enemy)
+GridObject* Grid::FindClosestTarget(GridObject* enemy)
 {
-	GameObject* closest_object = nullptr;
+	GridObject* closest_object = nullptr;
 	float closest_distance_ = 10000.0f;
 	//For every node, check if there is a character on that tile.
 	for (int i = 0; i < Nodes_.size(); i++) {
@@ -220,15 +226,15 @@ void Grid::RenderLocationIndicators()
 	}
 }
 
-void Grid::SetGameObjectPositionOnGrid(GameObject* game_object, sf::Vector2i position_on_grid)
+void Grid::SetGridObjectPositionOnGrid(GridObject* game_object, sf::Vector2i position_on_grid)
 {
 	//Find the node for that game_object.
 	Node* node = pathfinding_.FindNodeByPosition(position_on_grid, Nodes_);
 
-	SetGameObjectPositionOnGrid(game_object, node);
+	SetGridObjectPositionOnGrid(game_object, node);
 }
 
-void Grid::SetGameObjectPositionOnGrid(GameObject* game_object, Node* target_node)
+void Grid::SetGridObjectPositionOnGrid(GridObject* game_object, Node* target_node)
 {
 	if (target_node) {
 		game_object->setPosition(

@@ -1,17 +1,18 @@
 #pragma once
-#include "GameObject.h"
+#include "GridObject.h"
 #include "Memories.h"
 #include "TurnManager.h"
 
 class Grid;
 class CharacterManager;
 
-class Character : public GameObject, public Memories
+class Character : public GridObject, public Memories
 {
 public:
-	Character(std::string name, float health, CharacterManager* character_manager);
+	Character(std::string name, float health, sf::Vector2f size, sf::Vector2f position,
+		sf::Texture* texture, CharacterManager* character_manager);
 
-	virtual GameObject* DoAction(float dt, Grid* grid) = 0;
+	virtual GridObject* DoAction(float dt, Grid* grid) = 0;
 
 
 	void AddMemory(std::string what_happened);
@@ -25,8 +26,8 @@ public:
 	std::vector<Node*> Moveable_Nodes_;
 
 protected:
-	std::string name_;
+	std::string name_ = "";
 	int movement_ = 4;
 	bool show_movement_ = false;
-	CharacterManager* character_manager_;
+	CharacterManager* character_manager_ = nullptr;
 };

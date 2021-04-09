@@ -78,9 +78,6 @@
     <ClCompile Include="Input.cpp">
       <Filter>Source Files\General</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files\Sprites</Filter>
-    </ClCompile>
     <ClCompile Include="Character.cpp">
       <Filter>Source Files\Sprites\Characters</Filter>
     </ClCompile>
@@ -132,6 +129,33 @@
     <ClCompile Include="CharacterManager.cpp">
       <Filter>Source Files\Sprites\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="LocationManager.cpp">
+      <Filter>Source Files\TasksAndQuests</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskLocation.cpp">
+      <Filter>Source Files\TasksAndQuests</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Source Files\TasksAndQuests</Filter>
+    </ClCompile>
+    <ClCompile Include="GridObject.cpp">
+      <Filter>Source Files\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="Quest.cpp">
+      <Filter>Source Files\TasksAndQuests</Filter>
+    </ClCompile>
+    <ClCompile Include="Task.cpp">
+      <Filter>Source Files\TasksAndQuests</Filter>
+    </ClCompile>
+    <ClCompile Include="ThingsToDoAtLocation.cpp">
+      <Filter>Source Files\TasksAndQuests</Filter>
+    </ClCompile>
+    <ClCompile Include="StatsAndInventoryScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h">
@@ -151,9 +175,6 @@
     </ClInclude>
     <ClInclude Include="MainScene.h">
       <Filter>Header Files\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Header Files\Sprites</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
       <Filter>Header Files\Sprites\Character</Filter>
@@ -205,6 +226,33 @@
     </ClInclude>
     <ClInclude Include="CharacterManager.h">
       <Filter>Header Files\Sprites\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="LocationManager.h">
+      <Filter>Header Files\TasksAndQuests</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskLocation.h">
+      <Filter>Header Files\TasksAndQuests</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Header Files\TasksAndQuests</Filter>
+    </ClInclude>
+    <ClInclude Include="GridObject.h">
+      <Filter>Header Files\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="Quest.h">
+      <Filter>Header Files\TasksAndQuests</Filter>
+    </ClInclude>
+    <ClInclude Include="Task.h">
+      <Filter>Header Files\TasksAndQuests</Filter>
+    </ClInclude>
+    <ClInclude Include="ThingsToDoAtLocation.h">
+      <Filter>Header Files\TasksAndQuests</Filter>
+    </ClInclude>
+    <ClInclude Include="StatsAndInventoryScene.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include "Node.h"
-#include "GameObject.h"
+#include "GridObject.h"
 #include "Character.h"
 
 class Pathfinding

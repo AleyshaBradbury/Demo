@@ -5,9 +5,9 @@
 class Enemy : public Character
 {
 public:
-	Enemy(float health, CharacterManager* character_manager);
+	Enemy(float health, sf::Vector2f size, sf::Vector2f position, sf::Texture* texture, CharacterManager* character_manager);
 
-	GameObject* DoAction(float dt, Grid* grid);
+	GridObject* DoAction(float dt, Grid* grid);
 
 	void HandleTarget();
 
@@ -21,7 +21,7 @@ private:
 
 	void IncrementTurn();
 
-	GameObject* target_ = nullptr;
+	GridObject* target_ = nullptr;
 	TurnStages stage_ = TurnStages::FindTarget;
 };
 

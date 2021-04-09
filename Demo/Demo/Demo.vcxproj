@@ -144,13 +144,14 @@
     <ClCompile Include="CharacterManager.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FailureScene.cpp" />
-    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GridObject.cpp" />
     <ClCompile Include="GeneralFunctions.cpp" />
     <ClCompile Include="GeneralVariables.cpp" />
     <ClCompile Include="InfoWindow.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Location.cpp" />
+    <ClCompile Include="LocationManager.cpp" />
     <ClCompile Include="LocationScene.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainScene.cpp" />
@@ -159,10 +160,17 @@
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Pathfinding.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="Quest.cpp" />
+    <ClCompile Include="StatsAndInventoryScene.cpp" />
+    <ClCompile Include="Task.cpp" />
+    <ClCompile Include="TaskLocation.cpp" />
+    <ClCompile Include="ThingsToDoAtLocation.cpp" />
     <ClCompile Include="TurnManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -171,13 +179,14 @@
     <ClInclude Include="CharacterManager.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FailureScene.h" />
-    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GridObject.h" />
     <ClInclude Include="GeneralFunctions.h" />
     <ClInclude Include="GeneralVariables.h" />
     <ClInclude Include="InfoWindow.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Location.h" />
+    <ClInclude Include="LocationManager.h" />
     <ClInclude Include="LocationScene.h" />
     <ClInclude Include="MainScene.h" />
     <ClInclude Include="Memories.h" />
@@ -185,10 +194,17 @@
     <ClInclude Include="Node.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Pathfinding.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="Quest.h" />
+    <ClInclude Include="StatsAndInventoryScene.h" />
+    <ClInclude Include="Task.h" />
+    <ClInclude Include="TaskLocation.h" />
+    <ClInclude Include="ThingsToDoAtLocation.h" />
     <ClInclude Include="TurnManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

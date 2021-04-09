@@ -1,28 +1,17 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include "Node.h"
-#include "GeneralVariables.h"
+#include "SFML/Graphics.hpp"
 
 class GameObject : public sf::RectangleShape
 {
 public:
-	void SetGridNode(Node* grid_position);
-	Node* GetGridNode();
-	//Can a character stand on top of this thing?
-	bool isOverlap();
-	//Reset the health of the character to max health.
-	void ResetHealth();
-	//Remove health from character and delete them if they have no health left.
-	bool SubtractHealth(float health);
-	//Return the amount of health remaining.
-	float GetHealth();
+	GameObject(sf::Vector2f size, sf::Vector2f position, sf::Texture* texture,
+		GameObject* parent = nullptr, bool children_render_children = true);
+	void AddChild(GameObject* object);
+	void MoveObjectAndChildrenToPosition(sf::Vector2f new_position);
 
 protected:
-	Node* grid_node_ = NULL;
-	//Can a character stand on top of this thing?
-	bool overlap_ = true;
-
-	float max_health_ = 2.0f;
-	float health_ = 2.0f;
+	bool children_render_children_ = true;
+	std::vector<GameObject*> Children_;
+	GameObject* parent_ = nullptr;
 };
 

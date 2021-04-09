@@ -3,11 +3,13 @@
 void SceneManager::ChangeScene(Scene scene)
 {
 	scene_ = scene;
+	scene_changed_ = true;
 }
 
 void SceneManager::ChangeScene(int index)
 {
 	scene_ = (Scene)index;
+	scene_changed_ = true;
 }
 
 SceneManager::Scene SceneManager::GetScene()
@@ -18,6 +20,7 @@ SceneManager::Scene SceneManager::GetScene()
 void SceneManager::SetLocation(Location* location)
 {
 	current_location_ = location;
+	scene_changed_ = true;
 }
 
 Location* SceneManager::GetLocation()

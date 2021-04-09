@@ -2,12 +2,13 @@
 #include "Grid.h"
 #include "CharacterManager.h"
 
-Enemy::Enemy(float health, CharacterManager* character_manager) : 
-	Character("", health, character_manager)
+Enemy::Enemy(float health, sf::Vector2f size, sf::Vector2f position, sf::Texture* texture,
+	CharacterManager* character_manager) : 
+	Character("", health, size, position, texture, character_manager)
 {
 }
 
-GameObject* Enemy::DoAction(float dt, Grid* grid)
+GridObject* Enemy::DoAction(float dt, Grid* grid)
 {
 	switch (stage_)
 	{
@@ -24,7 +25,7 @@ GameObject* Enemy::DoAction(float dt, Grid* grid)
 		IncrementTurn();
 		break;
 	case TurnStages::Attack:
-		if (grid->CheckIfInRange(GetGridNode(),
+		if (target_ && grid->CheckIfInRange(GetGridNode(),
 			target_->GetGridNode(), 1)) {
 			if (target_->SubtractHealth(1)) {
 				return target_;

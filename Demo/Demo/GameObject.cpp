@@ -1,36 +1,28 @@
 #include "GameObject.h"
-#include "GeneralFunctions.h"
+#include "GeneralVariables.h"
 
-void GameObject::SetGridNode(Node* grid_position)
+GameObject::GameObject(sf::Vector2f size, sf::Vector2f position, sf::Texture* texture,
+	GameObject* parent, bool children_render_children)
 {
-	grid_node_ = grid_position;
+	setSize(size);
+	setPosition(position);
+	setTexture(texture);
+	parent_ = parent;
+	children_render_children_ = children_render_children;
 }
 
-Node* GameObject::GetGridNode()
+void GameObject::AddChild(GameObject* object)
 {
-	return grid_node_;
-}
-
-bool GameObject::isOverlap()
-{
-	return overlap_;
-}
-
-void GameObject::ResetHealth()
-{
-	health_ = max_health_;
-}
-
-bool GameObject::SubtractHealth(float health)
-{
-	health_ -= health;
-	if (health_ <= 0.0f) {
-		return true;
+	if (std::find(Children_.begin(), Children_.end(), object) !=
+		Children_.end()) {
+		Children_.push_back(object);
 	}
-	return false;
 }
 
-float GameObject::GetHealth()
+void GameObject::MoveObjectAndChildrenToPosition(sf::Vector2f new_position)
 {
-	return health_;
+	for (auto child : Children_) {
+		child->setPosition(new_position - (getPosition() - child->getPosition()));
+	}
+	setPosition(new_position);
 }

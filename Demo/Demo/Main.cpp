@@ -8,11 +8,13 @@
 #include "SceneManager.h"
 #include "TurnManager.h"
 #include "GeneralVariables.h"
+#include "ResourceManager.h"
 
 #include "MenuScene.h"
 #include "MainScene.h"
 #include "LocationScene.h"
 #include "FailureScene.h"
+#include "StatsAndInventoryScene.h"
 
 //
 //Declaring Static Members
@@ -23,8 +25,9 @@ bool Input::keys[256];
 Input::Mouse Input::mouse;
 
 //SceneManager static members.
-SceneManager::Scene SceneManager::scene_;
-Location* SceneManager::current_location_;
+SceneManager::Scene SceneManager::scene_ = SceneManager::Scene::Menu;
+Location* SceneManager::current_location_ = nullptr;
+bool SceneManager::scene_changed_ = false;
 
 //Grid static members.
 const float Grid::grid_spacing_ = 50.0f;
@@ -42,15 +45,15 @@ sf::Vector2u window_size_(800, 800);
 sf::RenderWindow GeneralVariables::window_(sf::VideoMode(window_size_.x, window_size_.y), "Demo");
 sf::Font GeneralVariables::font_;
 
+//Resource Manager static members.
+std::unordered_map<std::string, unsigned int> ResourceManager::resources;
+
 int main() {
 
 	srand((int)time(NULL));
 
 	//Initialise Clock Object.
 	sf::Clock clock;
-
-	//Initialse SceneManager Object.
-	SceneManager::ChangeScene(SceneManager::Scene::Menu);
 
 	//Initialise Input.
 	Input::Init();
@@ -61,8 +64,9 @@ int main() {
 	//Initialise Scene Objects.
 	MenuScene menu_scene_;
 	MainScene main_scene_;
-	FailureScene failure_scene_;
 	LocationScene location_scene_;
+	FailureScene failure_scene_;
+	StatsAndInventoryScene stats_and_inventory_scene_;
 
 	while (GeneralVariables::window_.isOpen())
 	{
@@ -139,6 +143,22 @@ int main() {
 		case SceneManager::Scene::Failure:
 			failure_scene_.Update(dt);
 			failure_scene_.Render();
+			break;
+		case SceneManager::Scene::StatsAndInventory:
+			stats_and_inventory_scene_.Update(dt);
+			stats_and_inventory_scene_.Render();
+		}
+
+		if (SceneManager::scene_changed_) {
+			SceneManager::scene_changed_ = false;
+			switch (SceneManager::GetScene()) {
+			case SceneManager::Scene::Location:
+				location_scene_.OnEnterLocation();
+				break;
+			case SceneManager::Scene::StatsAndInventory:
+				stats_and_inventory_scene_.OnEnter();
+				break;
+			}
 		}
 	}
 }

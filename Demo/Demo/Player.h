@@ -5,9 +5,10 @@
 class Player : public Character
 {
 public:
-	Player(float health, CharacterManager* character_manager);
+	Player(float health, sf::Vector2f size, sf::Vector2f position, sf::Texture* texture, 
+		CharacterManager* character_manager);
 	~Player();
-	GameObject* DoAction(float dt, Grid* grid);
+	GridObject* DoAction(float dt, Grid* grid);
 	void RenderTurnButton();
 private:
 	void CheckIfSpaceEmptyAndResolve(Node* node, Grid* grid);

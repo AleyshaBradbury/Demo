@@ -3,14 +3,15 @@
 #include <math.h>
 #include "Grid.h"
 
-NPC::NPC(std::string name, float health, CharacterManager* character_manager) : 
-	Character(name, health, character_manager)
+NPC::NPC(std::string name, float health, sf::Vector2f size, sf::Vector2f position, 
+	sf::Texture* texture, CharacterManager* character_manager) :
+	Character(name, health, size, position, texture, character_manager)
 {
 	std::cout << name << ":\n";
 	AddNeed("Food");
 }
 
-GameObject* NPC::DoAction(float dt, Grid* grid)
+GridObject* NPC::DoAction(float dt, Grid* grid)
 {
 	TurnManager::DetermineCharacterTurn();
 	return nullptr;

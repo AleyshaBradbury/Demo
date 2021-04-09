@@ -3,19 +3,20 @@
 #include "Button.h"
 #include "Pathfinding.h"
 #include <map>
+#include "LocationManager.h"
 
 class Enemy;
 
 class Grid
 {
 public:
-	Grid();
+	Grid(LocationManager* location_manager);
 	~Grid();
 
 	void InitialiseCharacter(Character* character, sf::Vector2i node_position);
 	bool MoveCharacter(Character* character, Node* node);
 	void MoveCharacter(Character* character, sf::Vector2i node_position);
-	void MoveCharacterTowardsTarget(Character* character, GameObject* target);
+	void MoveCharacterTowardsTarget(Character* character, GridObject* target);
 	Character* MovementAnimation(float dt);
 	Node* GridCollision(sf::Vector2f mouse_position);
 	bool CheckIfInRange(Node* node1, Node* node2, int max_distance);
@@ -25,13 +26,13 @@ public:
 	void AddLocation(Node* node);
 	bool CheckIfLocation(Node* current_node);
 
-	void SetGameObjectPositionOnGrid(GameObject* game_object, sf::Vector2i position_on_grid);
-	void SetGameObjectPositionOnGrid(GameObject* game_object, Node* target_node);
+	void SetGridObjectPositionOnGrid(GridObject* game_object, sf::Vector2i position_on_grid);
+	void SetGridObjectPositionOnGrid(GridObject* game_object, Node* target_node);
 	void SetCharacterPositionOnGrid(Character* character, sf::Vector2i position_on_grid);
 	void SetCharacterPositionOnGrid(Character* character, Node* target_node);
 
 	//Find closest target for the enemy.
-	GameObject* FindClosestTarget(Enemy* enemy);
+	GridObject* FindClosestTarget(GridObject* enemy);
 
 	void RenderGridPieces();
 	void RenderLocationIndicators();
@@ -46,14 +47,17 @@ public:
 private:
 	sf::Texture* LoadTexture(std::string texture_name);
 
+	LocationManager* location_manager_ = nullptr;
+
+	//The texture for locations.
+	sf::Texture location_texture_;
+
 	//
 	//Grid piece variables.
 	//
 
 	//Nodes vector.
 	std::vector<Node*> Nodes_;
-	//The texture for locations.
-	sf::Texture location_texture_;
 	//A vector of all of the main grid piece textures.
 	std::vector<sf::Texture*> Main_Textures_;
 	//A vector of all of the sub textures for the grid pieces.

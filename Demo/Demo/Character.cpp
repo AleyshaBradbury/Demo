@@ -1,7 +1,10 @@
 #include "Character.h"
 #include "CharacterManager.h"
+#include "Grid.h"
 
-Character::Character(std::string name, float health, CharacterManager* character_manager)
+Character::Character(std::string name, float health, sf::Vector2f size, sf::Vector2f position,
+	sf::Texture* texture, CharacterManager* character_manager) :
+	GridObject(size, position, texture)
 {
 	max_health_ = health;
 	name_ = name;

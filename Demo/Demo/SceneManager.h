@@ -8,7 +8,8 @@ public:
 		Menu,
 		Main,
 		Location,
-		Failure
+		Failure,
+		StatsAndInventory
 	};
 
 	static void ChangeScene(Scene scene_);
@@ -17,6 +18,8 @@ public:
 
 	static void SetLocation(Location* location);
 	static Location* GetLocation();
+
+	static bool scene_changed_;
 
 private:
 	static Scene scene_;

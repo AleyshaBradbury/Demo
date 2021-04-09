@@ -3,6 +3,7 @@
 #include "Grid.h"
 #include "Node.h"
 #include "GeneralVariables.h"
+#include "LocationManager.h"
 
 Location::Location(Node* node, sf::Texture* texture)
 {
@@ -10,14 +11,6 @@ Location::Location(Node* node, sf::Texture* texture)
 	indicator_.setOrigin(indicator_.getSize() / 2.0f);
 	indicator_.setPosition(node->getPosition());
 	indicator_.setTexture(texture);
-}
-
-void Location::Update(float dt)
-{
-}
-
-void Location::Render()
-{
 }
 
 void Location::RenderIndicatorOnMap()
