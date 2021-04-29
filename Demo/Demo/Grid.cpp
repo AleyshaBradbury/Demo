@@ -78,7 +78,7 @@ Character* Grid::MovementAnimation(float dt)
 	if (moving_character_) {
 		if (movement_nodes_.size() > 0) {
 			movement_timer_ += dt;
-			moving_character_->setPosition(GeneralFunctions::LerpVector2(
+			moving_character_->MoveObject(GeneralFunctions::LerpVector2(
 				previous_movement_node_->getPosition(),
 				movement_nodes_.front()->getPosition(),
 				movement_timer_ / max_movement_timer_));
@@ -120,6 +120,9 @@ void Grid::CreateMap(std::string file_name)
 	file.open(file_name);
 	std::string line, word, temp;
 
+	int highestX = 0;
+	int highestY = 0;
+
 	while (file >> temp) {
 		std::vector<std::string> row;
 
@@ -143,24 +146,30 @@ void Grid::CreateMap(std::string file_name)
 			Nodes_.push_back(new Node(sf::Vector2i(positionX, positionY), main_texture,
 				sub_texture));;
 			pathfinding_.SetupNode(Nodes_.back(), Nodes_);
+
+			if (highestX < positionX) {
+				highestX = positionX;
+			}
+			if (highestY < positionY) {
+				highestY = positionY;
+			}
 		}
 	}
+
+	grid_size_.x = highestX;
+	grid_size_.y = highestY;
 }
 
-void Grid::AddLocation(sf::Vector2i node_position)
+void Grid::AddLocation(sf::Vector2i node_position, Location* location)
 {
 	Node* node = pathfinding_.FindNodeByPosition(node_position, Nodes_);
-	AddLocation(node);
+	AddLocation(node, location);
 }
 
-void Grid::AddLocation(Node* node)
+void Grid::AddLocation(Node* node, Location* location)
 {
 	if (node) {
-		TaskLocation* task_location = new TaskLocation(node, &location_texture_);
-		Task* task = new Task("Chop Down Tree", "wood", 1);
-		task_location->AddAction(task);
-		node->SetLocation(task_location);
-		location_manager_->AddLocation(node->GetLocation());
+		node->SetLocation(location);
 	}
 }
 
@@ -177,8 +186,8 @@ bool Grid::CheckIfLocation(Node* current_node)
 
 bool Grid::CheckIfInRange(Node* node1, Node* node2, int max_distance)
 {
-	float distanceX = abs(node1->GetGridPosition().x - node2->GetGridPosition().x);
-	float distanceY = abs(node1->GetGridPosition().y - node2->GetGridPosition().y);
+	int distanceX = abs(node1->GetGridPosition().x - node2->GetGridPosition().x);
+	int distanceY = abs(node1->GetGridPosition().y - node2->GetGridPosition().y);
 
 	if (distanceX + distanceY <= max_distance) {
 		return true;
@@ -193,7 +202,7 @@ GridObject* Grid::FindClosestTarget(GridObject* enemy)
 	//For every node, check if there is a character on that tile.
 	for (int i = 0; i < Nodes_.size(); i++) {
 		Character* character = Nodes_[i]->GetCharacterOnTile();
-		if (character && character != enemy) {
+		if (character && !character->isEnemy()) {
 			//Get the distance between the character and the enemy.
 			float distance = GeneralFunctions::DistanceBetweenTwoObjects(
 				enemy->GetGridNode()->GetGridPosition(), character->GetGridNode()->GetGridPosition());
@@ -206,6 +215,25 @@ GridObject* Grid::FindClosestTarget(GridObject* enemy)
 		}
 	}
 	return closest_object;
+}
+
+Node* Grid::GetNodeAtPositionOrClosest(const sf::Vector2i node_position)
+{
+	Node* closest_node = Nodes_[0];
+	int distance = sqrtf(pow(node_position.x - Nodes_[0]->GetGridPosition().x, 2) +
+		pow(node_position.y - Nodes_[0]->GetGridPosition().y, 2));
+	for (int i = 1; i < Nodes_.size(); i++) {
+		int new_distance = sqrtf(pow(node_position.x - Nodes_[i]->GetGridPosition().x, 2) +
+			pow(node_position.y - Nodes_[i]->GetGridPosition().y, 2));
+		if (new_distance < distance) {
+			closest_node = Nodes_[i];
+			if (new_distance == 0) {
+				return closest_node;
+			}
+			distance = new_distance;
+		}
+	}
+	return closest_node;
 }
 
 void Grid::RenderGridPieces()
@@ -237,9 +265,9 @@ void Grid::SetGridObjectPositionOnGrid(GridObject* game_object, sf::Vector2i pos
 void Grid::SetGridObjectPositionOnGrid(GridObject* game_object, Node* target_node)
 {
 	if (target_node) {
-		game_object->setPosition(
+		game_object->MoveObject(sf::Vector2f(
 			target_node->GetGridPosition().x * grid_spacing_ + grid_spacing_ / 2.0f,
-			target_node->GetGridPosition().y * grid_spacing_ + grid_spacing_ / 2.0f);
+			target_node->GetGridPosition().y * grid_spacing_ + grid_spacing_ / 2.0f));
 		game_object->SetGridNode(target_node);
 	}
 }

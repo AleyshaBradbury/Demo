@@ -12,7 +12,7 @@ Node::Node(sf::Vector2i grid_position, sf::Texture* main_texture, sf::Texture* a
 	setTexture(main_texture);
 	setSize(sf::Vector2f(Grid::grid_spacing_, Grid::grid_spacing_));
 	setOrigin(getSize() / 2.0f);
-	setPosition(sf::Vector2f(grid_position.x, grid_position.y) * Grid::grid_spacing_);
+	setPosition(sf::Vector2f((float)grid_position.x, (float)grid_position.y) * Grid::grid_spacing_);
 	if (!main_texture) {
 		setFillColor(sf::Color::Cyan);
 	}
@@ -32,7 +32,7 @@ Node::Node(sf::Vector2i grid_position, sf::Texture* main_texture, sf::Texture* a
 	moveable_.setSize(sf::Vector2f(Grid::grid_spacing_, Grid::grid_spacing_));
 	moveable_.setOrigin(moveable_.getSize() / 2.f);
 	moveable_.setPosition(getPosition());
-	moveable_.setFillColor(sf::Color(0.0f, 0.0f, 255.0f, 100.0f));
+	moveable_.setFillColor(sf::Color(0, 0, 255, 100));
 }
 
 void Node::RenderMoveable()
@@ -74,13 +74,9 @@ bool Node::Collision(sf::Vector2f mouse_position)
 	return false;
 }
 
-bool Node::SetLocation(Location* location)
+void Node::SetLocation(Location* location)
 {
-	if (location_) {
-		return false;
-	}
 	location_ = location;
-	return true;
 }
 
 Location* Node::GetLocation()
@@ -106,7 +102,9 @@ void Node::Render()
 void Node::SetCharacterOnTile(Character* character)
 {
 	character_on_tile_ = character;
-	character_on_tile_->setPosition(getPosition());
+	if (character_on_tile_) {
+		character_on_tile_->MoveObject(getPosition());
+	}
 }
 
 Character* Node::GetCharacterOnTile()

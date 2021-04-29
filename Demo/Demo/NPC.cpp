@@ -3,18 +3,27 @@
 #include <math.h>
 #include "Grid.h"
 
-NPC::NPC(std::string name, float health, sf::Vector2f size, sf::Vector2f position, 
-	sf::Texture* texture, CharacterManager* character_manager) :
-	Character(name, health, size, position, texture, character_manager)
+NPC::NPC(std::string name, int health, sf::Vector2f position, 
+	sf::Texture* texture, CharacterManager* character_manager,
+	int movements, int attacks) :
+	Character(name, health, position, texture, character_manager,
+		movements, attacks)
 {
 	std::cout << name << ":\n";
-	AddNeed("Food");
 }
 
-GridObject* NPC::DoAction(float dt, Grid* grid)
+NPC::~NPC()
+{
+	for (int i = 0; i < 4; i++) {
+		if (grid_node_->GetNeighbour(i)) {
+			grid_node_->GetNeighbour(i)->SetLocation(nullptr);
+		}
+	}
+}
+
+void NPC::DoAction(float dt, Grid* grid)
 {
 	TurnManager::DetermineCharacterTurn();
-	return nullptr;
 }
 
 void NPC::IncrementNeeds()

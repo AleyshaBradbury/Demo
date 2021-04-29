@@ -1,14 +1,19 @@
 #include "MainScene.h"
+#include <fstream>
 #include <iostream>
-#include "Memories.h"
+#include <filesystem>
+#include <string>
 #include "TurnManager.h"
 #include "GeneralFunctions.h"
 #include "TaskLocation.h"
+
+namespace fs = std::filesystem;
 
 MainScene::MainScene()
 {
 	location_manager_ = new LocationManager();
 	grid_ = new Grid(location_manager_);
+	location_manager_->CreateTaskLocations(grid_);
 
 	//Set up the view.
 	grid_->grid_view_.setSize((sf::Vector2f)GeneralVariables::window_.getSize());
@@ -16,8 +21,6 @@ MainScene::MainScene()
 	grid_->grid_view_.setCenter(sf::Vector2f(0.0f, 0.0f));
 
 	TurnManager::character_manager_ = &character_manager_;
-
-	grid_->AddLocation(sf::Vector2i(4, 4));
 }
 
 MainScene::~MainScene()
@@ -25,57 +28,54 @@ MainScene::~MainScene()
 	Release();
 	delete grid_;
 	grid_ = nullptr;
-	delete location_manager_;
-	location_manager_ = nullptr;
 }
 
 void MainScene::Init()
 {
 	//Set the values for the size of the grid pieces and the size of the characters.
 	float grid_spacing = Grid::grid_spacing_;
-	float character_size = grid_spacing / 5.0f * 4.0f;
 
 	//Set up player.
-	character_manager_.player_ = new Player(20.0f, 
-		sf::Vector2f(character_size, character_size), sf::Vector2f(), nullptr,
-		&character_manager_);
+	character_manager_.player_ = new Player(20.0f, sf::Vector2f(), nullptr,
+		&character_manager_, 1, 1);
 	character_manager_.player_->setFillColor(sf::Color::Green);
 	grid_->InitialiseCharacter(character_manager_.player_, sf::Vector2i(0, 0));
 	turn_manager_.character_turn_ = character_manager_.player_;
 	turn_manager_.StartTurn(character_manager_.player_);
 
-	//Set up npc.
-	character_manager_.Npcs_.push_back(new NPC("Joey", 30.0f,
-		sf::Vector2f(character_size, character_size), sf::Vector2f(), nullptr,
-		&character_manager_));
-	character_manager_.Npcs_.back()->setSize(sf::Vector2f(character_size, character_size));
-	character_manager_.Npcs_.back()->setFillColor(sf::Color::Blue);
-	character_manager_.Npcs_.back()->setOrigin(character_size / 2.0f, character_size / 2.0f);
-	grid_->InitialiseCharacter(character_manager_.Npcs_.back(), sf::Vector2i(0, 1));
+	for (auto& p : fs::directory_iterator("NPCs")) {
+		character_manager_.CreateNPCFromFile(p.path().string(), grid_);
+	}
 
 	//Set up enemy.
-	character_manager_.Enemies_.push_back(new Enemy(40.0f,
-		sf::Vector2f(character_size, character_size), sf::Vector2f(), nullptr,
-		&character_manager_));
-	character_manager_.Enemies_.back()->setSize(sf::Vector2f(character_size, character_size));
+	character_manager_.Enemies_.push_back(new Enemy(40.0f, sf::Vector2f(), nullptr,
+		&character_manager_, 1, 1));
 	character_manager_.Enemies_.back()->setFillColor(sf::Color::Red);
-	character_manager_.Enemies_.back()->setOrigin(character_size / 2.0f, character_size / 2.0f);
 	grid_->InitialiseCharacter(character_manager_.Enemies_.back(), sf::Vector2i(3, 3));
+
+	//Set up the quest manager and pass in managers into classes as needed.
+	quest_manager_ = new QuestManager(&character_manager_);
+	location_manager_->CreateQuestLocations(grid_, &character_manager_, quest_manager_);
+	turn_manager_.turn_ = TurnManager::Turn::Player;
+	character_manager_.SetLocationManager(location_manager_);
 }
 
 void MainScene::Release()
 {
+	location_manager_->DeleteAllQuestLocations();
+	delete quest_manager_;
+	quest_manager_ = nullptr;
 	character_manager_.DeleteAll();
 }
 
 bool MainScene::Update(float dt)
 {
 	Character* c = grid_->MovementAnimation(dt);
-	if (!c) {
-		turn_manager_.character_turn_->DoAction(dt, grid_);
-	}
-	else {
-		grid_->grid_view_.setCenter(c->getPosition());
+	if (turn_manager_.character_turn_) {
+		if (!c) {
+			turn_manager_.character_turn_->DoAction(dt, grid_);
+		}
+		grid_->grid_view_.setCenter(turn_manager_.character_turn_->getPosition());
 	}
 	return false;
 }
@@ -84,11 +84,15 @@ void MainScene::Render()
 {
 	StartDraw();
 
-	//Set the view to have the centre on the player.
-	GeneralVariables::window_.setView(grid_->grid_view_);
+	if (grid_) {
+		//Set the view to have the centre on the player.
+		GeneralVariables::window_.setView(grid_->grid_view_);
 
-	grid_->RenderGridPieces();
+		//Render the grid.
+		grid_->RenderGridPieces();
+	}
 
+	//Render all of the characters.
 	character_manager_.RenderAll();
 
 	//Render the exclamation mark indicators for all locations on top of the moveable areas.
@@ -106,6 +110,10 @@ void MainScene::RenderUI()
 	//
 	//Render the UI elements.
 	//
+
+	if (turn_manager_.character_turn_) {
+		turn_manager_.character_turn_->RenderIcons();
+	}
 
 	//Render the end turn button.
 	if (turn_manager_.turn_ == TurnManager::Turn::Player) {

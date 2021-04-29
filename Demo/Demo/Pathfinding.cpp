@@ -184,12 +184,12 @@ int Pathfinding::FindNodeNumByPosition(sf::Vector2i grid_position, std::vector<N
 }
 
 
-float Pathfinding::h(sf::Vector2i start, sf::Vector2i end)
+int Pathfinding::h(sf::Vector2i start, sf::Vector2i end)
 {
 	return abs(start.x - end.x) + abs(start.y - end.y);
 }
 
-float Pathfinding::d(Node* end)
+int Pathfinding::d(Node* end)
 {
 	return end->GetDistance();
 }

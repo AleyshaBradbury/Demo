@@ -4,14 +4,18 @@
 #include "Grid.h"
 #include "SceneManager.h"
 
-Player::Player(float health, sf::Vector2f size, sf::Vector2f position, sf::Texture* texture, 
-	CharacterManager* character_manager) :
-	Character("player", health, size, position, texture, character_manager)
+Player::Player(int health, sf::Vector2f position, sf::Texture* texture, 
+	CharacterManager* character_manager, int movements, int attacks) :
+	Character("player", health, position, texture, character_manager, movements, attacks)
 {
 	sf::Vector2f button_size(105.0f, 35.0f);
 	turn_button_ = new Button("End Turn",
 		sf::Vector2f(GeneralVariables::window_.getSize().x - button_size.x - 10.0f, 10.0f),
 		button_size, 20);
+	sf::Vector2f button_size2 = sf::Vector2f(315.0f, 35.0f);
+	DEBUG_skip_to_start_of_players_turn_ = new Button("(DEBUG) Skip to Start Player",
+		sf::Vector2f(GeneralVariables::window_.getSize().x - button_size.x - button_size2.x - 20.0f, 10.0f),
+		button_size2, 20);
 }
 
 Player::~Player()
@@ -20,7 +24,7 @@ Player::~Player()
 	turn_button_ = NULL;
 }
 
-GridObject* Player::DoAction(float dt, Grid* grid)
+void Player::DoAction(float dt, Grid* grid)
 {
 	if (Input::GetMouseLeftDown()) {
 		Node* node = grid->GridCollision(GeneralVariables::window_.mapPixelToCoords(Input::GetMouse(), grid->grid_view_));
@@ -32,8 +36,12 @@ GridObject* Player::DoAction(float dt, Grid* grid)
 			for (int i = 0; i < character_manager_->Npcs_.size(); i++) {
 				character_manager_->Npcs_[i]->IncrementNeeds();
 			}
-
+			ResetActions();
 			TurnManager::DetermineCharacterTurn();
+		}
+		else if (DEBUG_skip_to_start_of_players_turn_->Collision(GeneralVariables::window_.mapPixelToCoords(Input::GetMouse()))) {
+			ResetActions();
+			TurnManager::DEBUGSkipToStartOfPlayerTurn();
 		}
 		else if (node) {
 			CheckIfSpaceEmptyAndResolve(node, grid);
@@ -44,20 +52,25 @@ GridObject* Player::DoAction(float dt, Grid* grid)
 	//If the spacebar is pressed and the player is on a location, enter that location.
 	if (Input::GetKeyDown(sf::Keyboard::Space) && grid->CheckIfLocation(GetGridNode())) {
 		Input::SetKeyUp(sf::Keyboard::Space);
-		return nullptr;
+		return;
 	}
 	else if (Input::GetKeyDown(sf::Keyboard::E)) {
 		Input::SetKeyUp(sf::Keyboard::E);
 		SceneManager::ChangeScene(SceneManager::Scene::StatsAndInventory);
-		return nullptr;
+		return;
 	}
-	return nullptr;
 }
 
 void Player::RenderTurnButton()
 {
-	GeneralVariables::window_.draw(*turn_button_);
-	turn_button_->RenderButtonText();
+	if (turn_button_) {
+		GeneralVariables::window_.draw(*turn_button_);
+		turn_button_->RenderButtonText();
+	}
+	if (DEBUG_skip_to_start_of_players_turn_) {
+		GeneralVariables::window_.draw(*DEBUG_skip_to_start_of_players_turn_);
+		DEBUG_skip_to_start_of_players_turn_->RenderButtonText();
+	}
 }
 
 void Player::CheckIfSpaceEmptyAndResolve(Node* node, Grid* grid)
@@ -88,5 +101,7 @@ void Player::CheckIfSpaceEmptyAndResolve(Node* node, Grid* grid)
 	}
 
 	//If nobody is in the node selected then move to that node.
-	grid->MoveCharacter(this, node);
+	if (GetMovementActions() > 0 && grid->MoveCharacter(this, node)) {
+		SpendMovement();
+	}
 }

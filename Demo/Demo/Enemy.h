@@ -5,11 +5,11 @@
 class Enemy : public Character
 {
 public:
-	Enemy(float health, sf::Vector2f size, sf::Vector2f position, sf::Texture* texture, CharacterManager* character_manager);
+	Enemy(int health, sf::Vector2f position, sf::Texture* texture, 
+		CharacterManager* character_manager, int movements, int attacks);
+	~Enemy();
 
-	GridObject* DoAction(float dt, Grid* grid);
-
-	void HandleTarget();
+	void DoAction(float dt, Grid* grid);
 
 private:
 	enum class TurnStages {

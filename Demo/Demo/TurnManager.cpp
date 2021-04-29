@@ -1,6 +1,7 @@
 #include "TurnManager.h"
 #include "Grid.h"
 #include "CharacterManager.h"
+#include "QuestManager.h"
 
 void TurnManager::StartTurn(Character* character)
 {
@@ -19,6 +20,7 @@ void TurnManager::DetermineCharacterTurn()
 	//End the previous characters turn.
 	if (character_turn_) {
 		EndTurn(character_turn_);
+		character_turn_ = nullptr;
 	}
 	turn_num_++;
 	switch (turn_) {
@@ -30,13 +32,15 @@ void TurnManager::DetermineCharacterTurn()
 			turn_ = Turn::NPC;
 			character_turn_ = character_manager_->Npcs_[0];
 			turn_num_ = 0;
+			break;
 		}
 		else if (character_manager_->Enemies_.size() > 0) {
 			turn_ = Turn::Enemy;
 			character_turn_ = character_manager_->Enemies_[0];
 			turn_num_ = 0;
+			break;
 		}
-		break;
+		return;
 	case Turn::NPC:
 		/*If all of the NPCs have had their turn: 
 		- if there are any enemies, set the first enemy to have their turn
@@ -69,6 +73,13 @@ void TurnManager::DetermineCharacterTurn()
 		}
 	}
 	//Start the determined characters turn.
-	if (character_turn_);
+	if (character_turn_) {
+		StartTurn(character_turn_);
+	}
+}
+
+void TurnManager::DEBUGSkipToStartOfPlayerTurn()
+{
+	EndTurn(character_turn_);
 	StartTurn(character_turn_);
 }

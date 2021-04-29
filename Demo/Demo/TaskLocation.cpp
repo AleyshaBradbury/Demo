@@ -3,6 +3,13 @@
 TaskLocation::TaskLocation(Node* node, sf::Texture* texture) :
 	Location(node, texture)
 {
+	node_ = node;
+	node_->SetLocation(this);
+}
+
+TaskLocation::~TaskLocation()
+{
+	node_->SetLocation(nullptr);
 }
 
 void TaskLocation::AddAction(Task* task)

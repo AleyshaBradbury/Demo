@@ -15,5 +15,7 @@ Location::Location(Node* node, sf::Texture* texture)
 
 void Location::RenderIndicatorOnMap()
 {
-	GeneralVariables::window_.draw(indicator_);
+	if (indicator_.getTexture() != nullptr) {
+		GeneralVariables::window_.draw(indicator_);
+	}
 }

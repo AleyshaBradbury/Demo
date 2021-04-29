@@ -10,6 +10,7 @@
 #include "CharacterManager.h"
 #include "LocationManager.h"
 #include "LocationScene.h"
+#include "QuestManager.h"
 
 class MainScene : public Scene
 {
@@ -33,10 +34,11 @@ private:
 	CharacterManager character_manager_;
 
 	//The grid object.
-	Grid* grid_;
+	Grid* grid_ = nullptr;
 
 	const sf::Vector2f task_size_ = sf::Vector2f(500.0f, 200.0f);
 
-	LocationManager* location_manager_;
+	LocationManager* location_manager_ = nullptr;
+	QuestManager* quest_manager_ = nullptr;
 };
 

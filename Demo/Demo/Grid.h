@@ -22,8 +22,8 @@ public:
 	bool CheckIfInRange(Node* node1, Node* node2, int max_distance);
 
 	void CreateMap(std::string file_name);
-	void AddLocation(sf::Vector2i node_position);
-	void AddLocation(Node* node);
+	void AddLocation(sf::Vector2i node_position, Location* location);
+	void AddLocation(Node* node, Location* location);
 	bool CheckIfLocation(Node* current_node);
 
 	void SetGridObjectPositionOnGrid(GridObject* game_object, sf::Vector2i position_on_grid);
@@ -34,6 +34,8 @@ public:
 	//Find closest target for the enemy.
 	GridObject* FindClosestTarget(GridObject* enemy);
 
+	Node* GetNodeAtPositionOrClosest(const sf::Vector2i node_position);
+
 	void RenderGridPieces();
 	void RenderLocationIndicators();
 	
@@ -43,6 +45,9 @@ public:
 
 	//The view of the grid so that the camera can be focused on the active character.
 	static sf::View grid_view_;
+
+	//The amount of tiles in the x and y directions.
+	sf::Vector2i grid_size_;
 
 private:
 	sf::Texture* LoadTexture(std::string texture_name);

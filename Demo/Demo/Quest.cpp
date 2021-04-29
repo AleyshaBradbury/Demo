@@ -1,11 +1,11 @@
 #include "Quest.h"
 #include "GeneralVariables.h"
+#include "ResourceManager.h"
 
-Quest::Quest(std::string quest_name, std::vector<QuestDetails> Quest_Requirements, ResourceManager* resource_manager) :
+Quest::Quest(std::string quest_name, std::vector<QuestDetails> Quest_Requirements) :
 	ThingsToDoAtLocation()
 {
 	Quest_Requirements_ = Quest_Requirements;
-	resource_manager_ = resource_manager;
 
 	setSize(getSize() + sf::Vector2f(0.0f, 22.0f * Quest_Requirements_.size() - 1));
 
@@ -22,7 +22,7 @@ bool Quest::DoAction()
 	for (auto task : Quest_Requirements_) {
 		if (!task.complete) {
 			if (task.type_ == "Resource") {
-				if (!resource_manager_->AddResource(task.action_resource_, -task.amount_)) {
+				if (ResourceManager::AddResource(task.action_resource_, -task.amount_)) {
 					return false;
 				}
 				else {
@@ -32,4 +32,8 @@ bool Quest::DoAction()
 		}
 	}
 	return true;
+}
+
+void Quest::RenderExtra()
+{
 }

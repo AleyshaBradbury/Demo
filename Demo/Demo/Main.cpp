@@ -158,7 +158,11 @@ int main() {
 			case SceneManager::Scene::StatsAndInventory:
 				stats_and_inventory_scene_.OnEnter();
 				break;
+			case SceneManager::Scene::Failure:
+				main_scene_.Release();
+				break;
 			}
+
 		}
 	}
 }

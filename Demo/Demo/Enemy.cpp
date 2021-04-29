@@ -1,47 +1,64 @@
 #include "Enemy.h"
 #include "Grid.h"
 #include "CharacterManager.h"
+#include <iostream>
 
-Enemy::Enemy(float health, sf::Vector2f size, sf::Vector2f position, sf::Texture* texture,
-	CharacterManager* character_manager) : 
-	Character("", health, size, position, texture, character_manager)
+Enemy::Enemy(int health, sf::Vector2f position, sf::Texture* texture,
+	CharacterManager* character_manager, int movements, int attacks) : 
+	Character("", health, position, texture, character_manager, movements, attacks)
 {
+	is_enemy_ = true;
 }
 
-GridObject* Enemy::DoAction(float dt, Grid* grid)
+Enemy::~Enemy()
+{
+	target_ = nullptr;
+}
+
+void Enemy::DoAction(float dt, Grid* grid)
 {
 	switch (stage_)
 	{
 	case TurnStages::FindTarget:
 		//Find the closest target.
 		target_ = grid->FindClosestTarget(this);
+		std::cout << "Enemy: Chosen target.\n";
 		IncrementTurn();
 		break;
 	case TurnStages::Movement:
 		//Move towards the target.
-		if (target_) {
+		if (GetMovementActions() > 0 && target_) {
 			grid->MoveCharacterTowardsTarget(this, target_);
+			std::cout << "Enemy: Moving to target.\n";
+			SpendMovement();
 		}
-		IncrementTurn();
+		if (GetMovementActions() <= 0) {
+			IncrementTurn();
+		}
 		break;
 	case TurnStages::Attack:
-		if (target_ && grid->CheckIfInRange(GetGridNode(),
-			target_->GetGridNode(), 1)) {
-			if (target_->SubtractHealth(1)) {
-				return target_;
+		if (target_ && grid->CheckIfInRange(GetGridNode(), target_->GetGridNode(), 1)) {
+			if (GetAction() > 0) {
+				std::cout << "Enemy: Attacking target.\n";
+				if (target_->SubtractHealth(1)) {
+					character_manager_->DeleteDeadCharacter((Character*)target_);
+					target_ = nullptr;
+				}
+				SpendAction();
+			}
+			else {
+				IncrementTurn();
 			}
 		}
-		IncrementTurn();
+		else {
+			IncrementTurn();
+		}
 		break;
 	}
 	if (stage_ == TurnStages::FindTarget) {
 		TurnManager::DetermineCharacterTurn();
+		ResetActions();
 	}
-	return nullptr;
-}
-
-void Enemy::HandleTarget()
-{
 }
 
 void Enemy::IncrementTurn()

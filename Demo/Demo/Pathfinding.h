@@ -16,9 +16,9 @@ public:
 	
 private:
 	//Returns the estimated distance between the start and end node.
-	float h(sf::Vector2i start, sf::Vector2i end);
+	int h(sf::Vector2i start, sf::Vector2i end);
 	//Returns the distance between the neighbouring nodes.
-	float d(Node* end);
+	int d(Node* end);
 
 	std::vector<Node*> Nodes_To_Be_Checked_;
 };

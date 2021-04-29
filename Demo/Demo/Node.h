@@ -19,7 +19,7 @@ public:
 	int GetDistance();
 
 	bool Collision(sf::Vector2f mouse_position);
-	bool SetLocation(Location* location);
+	void SetLocation(Location* location);
 	Location* GetLocation();
 	bool EnterLocation();
 
@@ -30,7 +30,7 @@ public:
 
 private:
 	//The position of the node in the grid.
-	sf::Vector2i grid_position_ = sf::Vector2i(0.0f, 0.0f);
+	sf::Vector2i grid_position_ = sf::Vector2i(0, 0);
 	//The nodes neighboring this one.
 	Node* neighbours_[4] = {NULL, NULL, NULL, NULL};
 	//The number of neighbours created so far.

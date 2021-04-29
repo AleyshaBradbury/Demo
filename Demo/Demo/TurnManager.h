@@ -2,6 +2,7 @@
 
 class CharacterManager;
 class Character;
+class QuestManager;
 
 class TurnManager
 {
@@ -17,6 +18,7 @@ public:
 	static void StartTurn(Character* character);
 	static void EndTurn(Character* character);
 	static void DetermineCharacterTurn();
+	static void DEBUGSkipToStartOfPlayerTurn();
 
 	//Which factions turn is the game on?
 	static Turn turn_;
