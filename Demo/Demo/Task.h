@@ -16,6 +16,8 @@ public:
 	bool DoAction();
 	void RenderExtra();
 
+	std::string GetThingCollected();
+
 private:
 	//The name of the task. This is used for quest generation purposes.
 	std::string task_name_;

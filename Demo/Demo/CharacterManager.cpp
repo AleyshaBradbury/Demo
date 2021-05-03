@@ -50,12 +50,51 @@ void CharacterManager::DeleteDeadCharacter(Character* target)
 	}
 }
 
+void CharacterManager::SpawnEnemies()
+{
+	//Get the spots on the map that do not have a character already in them from the spawn point pool.
+	std::vector<Node*> current_open_spots = Enemy_Spawn_Points_;
+	for (int i = 0; i < current_open_spots.size(); i++) {
+		if (current_open_spots[i]->GetCharacterOnTile()) {
+			current_open_spots.erase(current_open_spots.begin() + i);
+			i--;
+		}
+	}
+
+	int random = rand() % num_to_spawn_;
+	for (int i = 0; i < random; i++) {
+		if (current_open_spots.size() > 0) {
+			Enemies_.push_back(new Enemy(40.0f, sf::Vector2f(), nullptr,
+				this, 1, 1));
+			Enemies_.back()->setFillColor(sf::Color::Red);
+			int random2 = rand() % current_open_spots.size();
+			grid_->InitialiseCharacter(Enemies_.back(), current_open_spots[random2]);
+			current_open_spots.erase(current_open_spots.begin() + random2);
+		}
+		else {
+			break;
+		}
+	}
+}
+
 void CharacterManager::SetLocationManager(LocationManager* location_manager)
 {
 	location_manager_ = location_manager;
 }
 
-void CharacterManager::CreateNPCFromFile(std::string file_name, Grid* grid, QuestManager* quest_manager)
+void CharacterManager::SetGrid(Grid* grid)
+{
+	grid_ = grid;
+}
+
+void CharacterManager::AddEnemySpawnPoint(Node* node)
+{
+	if (std::find(Enemy_Spawn_Points_.begin(), Enemy_Spawn_Points_.end(), node) == Enemy_Spawn_Points_.end()) {
+		Enemy_Spawn_Points_.push_back(node);
+	}
+}
+
+void CharacterManager::CreateNPCFromFile(std::string file_name, QuestManager* quest_manager)
 {
 	//Read in the npcs data from file and then initialise that character onto the grid.
 	std::string name = "";
@@ -106,7 +145,7 @@ void CharacterManager::CreateNPCFromFile(std::string file_name, Grid* grid, Ques
 	for (int i = 0; i < Needs.size(); i++) {
 		Npcs_.back()->AddNeed(Needs[i]);
  }
-	grid->InitialiseCharacter(Npcs_.back(), initial_position);
+	grid_->InitialiseCharacter(Npcs_.back(), initial_position);
 }
 
 void CharacterManager::RenderAll()

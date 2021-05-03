@@ -4,6 +4,7 @@
 
 class Node;
 class LocationManager;
+class Player;
 
 class Location
 {
@@ -13,7 +14,7 @@ public:
 	virtual void RenderLocation() = 0;
 
 	virtual void SetUpLocation() = 0;
-	virtual void Update(float dt) = 0;
+	virtual bool Update(float dt, Player* player) = 0;
 
 private:
 	sf::RectangleShape indicator_;

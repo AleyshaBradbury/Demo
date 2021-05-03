@@ -9,17 +9,15 @@ QuestManager::QuestManager(CharacterManager* character_manager)
 
 void QuestManager::GenerateQuests(NPC* npc)
 {
-    if (GetNPCsQuests(npc).size() == 0 && ResourceManager::resources.size() > 0) {
-        int random = rand() % ResourceManager::resources.size();
-        std::unordered_map<std::string, unsigned int>::iterator it = 
-            ResourceManager::resources.begin();
-        std::advance(it, random);
+    if (GetNPCsQuests(npc).size() == 0) {
         std::vector<Quest::QuestDetails> quest_details;
         quest_details.push_back(Quest::QuestDetails());
-        quest_details.back().resource_ = it->first;
-        quest_details.back().amount_ = rand() % 5 + 1;
-        Quest* quest = new Quest("I need " + it->first + "!", quest_details);
-        AddQuest(npc, quest);
+        quest_details.back().resource_ = DetermineResource();
+        if (quest_details.back().resource_ != "") {
+            quest_details.back().amount_ = rand() % 5 + 1;
+            Quest* quest = new Quest("I need " + quest_details[0].resource_ + "!", quest_details);
+            AddQuest(npc, quest);
+        }
     }
 }
 
@@ -39,6 +37,19 @@ void QuestManager::DeleteQuest(Quest* quest, NPC* npc)
         npc_quests.erase(quest_position);
     }
     Quests_[npc] = npc_quests;
+}
+
+std::string QuestManager::DetermineResource()
+{
+    std::string resource = "";
+    std::vector<Memories::Memory> memories = character_manager_->player_->GetMemories();
+    for (int i = memories.size() - 1; i >= 0; i--) {
+        if (memories[i].what_happened_[0] == "Task") {
+            resource = memories[i].what_happened_[1];
+            break;
+        }
+    }
+    return resource;
 }
 
 void QuestManager::AddQuest(NPC* npc, Quest* quest)

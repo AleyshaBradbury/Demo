@@ -22,14 +22,12 @@ void Enemy::DoAction(float dt, Grid* grid)
 	case TurnStages::FindTarget:
 		//Find the closest target.
 		target_ = grid->FindClosestTarget(this);
-		std::cout << "Enemy: Chosen target.\n";
 		IncrementTurn();
 		break;
 	case TurnStages::Movement:
 		//Move towards the target.
 		if (GetMovementActions() > 0 && target_) {
 			grid->MoveCharacterTowardsTarget(this, target_);
-			std::cout << "Enemy: Moving to target.\n";
 			SpendMovement();
 		}
 		if (GetMovementActions() <= 0) {
@@ -39,7 +37,6 @@ void Enemy::DoAction(float dt, Grid* grid)
 	case TurnStages::Attack:
 		if (target_ && grid->CheckIfInRange(GetGridNode(), target_->GetGridNode(), 1)) {
 			if (GetAction() > 0) {
-				std::cout << "Enemy: Attacking target.\n";
 				if (target_->SubtractHealth(attack_strength_)) {
 					character_manager_->DeleteDeadCharacter((Character*)target_);
 					target_ = nullptr;

@@ -5,13 +5,13 @@ class Memories
 {
 public:
 	struct Memory {
-		std::string what_happened_;
+		std::vector<std::string> what_happened_;
 		int turns_ago_;
 		Node* where_it_happened_;
 		int turns_total_;
 	};
 
-	void AddMemory(std::string what_happened, Node* where_it_happened);
+	void AddMemory(std::vector<std::string> what_happened, Node* where_it_happened);
 	void ForgetMemories();
 	std::vector<Memories::Memory> GetMemories();
 

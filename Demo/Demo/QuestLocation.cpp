@@ -1,5 +1,6 @@
 #include "QuestLocation.h"
 #include "Input.h"
+#include "Player.h"
 
 QuestLocation::QuestLocation(NPC* npc, Node* node, sf::Texture* texture, 
 	QuestManager* quest_manager) :
@@ -47,7 +48,7 @@ void QuestLocation::SetUpLocation()
 	}
 }
 
-void QuestLocation::Update(float dt)
+bool QuestLocation::Update(float dt, Player* player)
 {
 	if (Input::GetMouseLeftDown()) {
 		for (int i = 0; i < Quest_.size(); i++) {
@@ -56,7 +57,15 @@ void QuestLocation::Update(float dt)
 				quest_manager_->DeleteQuest(Quest_[i], npc_);
 				npc_->AddCompletedQuest(Quest_[i]);
 				SetUpLocation();
-				return;
+				std::vector<std::string> memory;
+				memory.push_back("Quest");
+				memory.push_back(npc_->GetName());
+				std::vector<Quest::QuestDetails> details_ = Quest_[i]->GetRequirements();
+				for (int i = 0; i < details_.size(); i++) {
+					memory.push_back(details_[i].resource_);
+				}
+				player->AddMemory(memory);
+				return true;
 			}
 		}
 	}
@@ -66,4 +75,5 @@ void QuestLocation::Update(float dt)
 		quest_manager_->GenerateQuests(npc_);
 		SetUpLocation();
 	}
+	return false;
 }

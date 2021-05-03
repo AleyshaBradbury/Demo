@@ -31,7 +31,7 @@ Character::~Character()
 	grid_node_->SetCharacterOnTile(nullptr);
 }
 
-void Character::AddMemory(std::string what_happened)
+void Character::AddMemory(std::vector<std::string> what_happened)
 {
 	Memories::AddMemory(what_happened, grid_node_);
 }
@@ -104,6 +104,11 @@ void Character::RenderIcons()
 bool Character::isEnemy()
 {
 	return is_enemy_;
+}
+
+std::string Character::GetName()
+{
+	return name_;
 }
 
 void Character::ResetActions()

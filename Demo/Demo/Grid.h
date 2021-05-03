@@ -13,7 +13,8 @@ public:
 	Grid(LocationManager* location_manager);
 	~Grid();
 
-	void InitialiseCharacter(Character* character, sf::Vector2i node_position);
+	bool InitialiseCharacter(Character* character, sf::Vector2i node_position);
+	bool InitialiseCharacter(Character* character, Node* node);
 	bool MoveCharacter(Character* character, Node* node);
 	void MoveCharacter(Character* character, sf::Vector2i node_position);
 	void MoveCharacterTowardsTarget(Character* character, GridObject* target);
@@ -35,6 +36,7 @@ public:
 	GridObject* FindClosestTarget(GridObject* enemy);
 
 	Node* GetNodeAtPositionOrClosest(const sf::Vector2i node_position);
+	Node* GetRandomNodeWithoutCharacter();
 
 	void RenderGridPieces();
 	void RenderLocationIndicators();

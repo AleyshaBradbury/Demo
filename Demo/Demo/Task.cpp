@@ -31,3 +31,8 @@ bool Task::DoAction()
 void Task::RenderExtra()
 {
 }
+
+std::string Task::GetThingCollected()
+{
+	return task_details_.thing_collected_;
+}

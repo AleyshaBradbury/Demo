@@ -14,6 +14,8 @@ public:
 	bool DoAction();
 	void RenderExtra();
 
+	std::vector<QuestDetails> GetRequirements();
+
 private:
 	std::vector<QuestDetails> Quest_Requirements_;
 };

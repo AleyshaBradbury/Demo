@@ -1,7 +1,7 @@
 #include "Memories.h"
 #include <stdlib.h>
 
-void Memories::AddMemory(std::string what_happened, Node* where_it_happened)
+void Memories::AddMemory(std::vector<std::string> what_happened, Node* where_it_happened)
 {
 	Memory memory;
 	memory.where_it_happened_ = where_it_happened;

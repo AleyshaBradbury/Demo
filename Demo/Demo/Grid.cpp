@@ -27,11 +27,20 @@ Grid::~Grid()
 {
 }
 
-void Grid::InitialiseCharacter(Character* character, sf::Vector2i node_position)
+bool Grid::InitialiseCharacter(Character* character, sf::Vector2i node_position)
 {
 	Node* node = pathfinding_.FindNodeByPosition(node_position, Nodes_);
-	SetCharacterPositionOnGrid(character, node);
-	pathfinding_.FindAvailableNodes(character, Nodes_);
+	return InitialiseCharacter(character, node);
+}
+
+bool Grid::InitialiseCharacter(Character* character, Node* node)
+{
+	if (!node->GetCharacterOnTile()) {
+		SetCharacterPositionOnGrid(character, node);
+		pathfinding_.FindAvailableNodes(character, Nodes_);
+		return true;
+	}
+	return false;
 }
 
 bool Grid::MoveCharacter(Character* character, Node* node)
@@ -92,7 +101,9 @@ Character* Grid::MovementAnimation(float dt)
 			//Move the character.
 			SetCharacterPositionOnGrid(moving_character_, previous_movement_node_);
 			pathfinding_.FindAvailableNodes(moving_character_, Nodes_);
-			moving_character_->AddMemory("Moved");
+			std::vector<std::string> memory;
+			memory.push_back("Moved");
+			moving_character_->AddMemory(memory);
 			moving_character_ = nullptr;
 			movement_timer_ = 0.0f;
 		}
@@ -234,6 +245,19 @@ Node* Grid::GetNodeAtPositionOrClosest(const sf::Vector2i node_position)
 		}
 	}
 	return closest_node;
+}
+
+Node* Grid::GetRandomNodeWithoutCharacter()
+{
+	Node* node = nullptr;
+	while (!node) {
+		int random = rand() % Nodes_.size();
+		if (!Nodes_[random]->GetCharacterOnTile()) {
+			node = Nodes_[random];
+		}
+	}
+
+	return node;
 }
 
 void Grid::RenderGridPieces()

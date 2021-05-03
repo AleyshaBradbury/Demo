@@ -19,7 +19,7 @@ public:
 	virtual void DoAction(float dt, Grid* grid) = 0;
 
 
-	void AddMemory(std::string what_happened);
+	void AddMemory(std::vector<std::string> what_happened);
 	unsigned int GetMovement();
 	bool GetMoveable();
 	void SetMoveable(bool moveable);
@@ -36,6 +36,8 @@ public:
 	std::vector<Node*> Moveable_Nodes_;
 
 	bool isEnemy();
+
+	std::string GetName();
 
 protected:
 	void ResetActions();

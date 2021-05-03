@@ -22,6 +22,8 @@ public:
 	bool Update(float dt);
 	void Render();
 
+	CharacterManager* GetCharacterManager();
+
 private:
 	//Render the UI.
 	void RenderUI();

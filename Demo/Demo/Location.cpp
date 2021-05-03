@@ -4,6 +4,7 @@
 #include "Node.h"
 #include "GeneralVariables.h"
 #include "LocationManager.h"
+#include "Player.h"
 
 Location::Location(Node* node, sf::Texture* texture)
 {

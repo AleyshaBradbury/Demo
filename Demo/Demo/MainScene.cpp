@@ -23,6 +23,7 @@ MainScene::MainScene()
 	TurnManager::character_manager_ = &character_manager_;
 
 	quest_manager_ = new QuestManager(&character_manager_);
+	character_manager_.SetGrid(grid_);
 }
 
 MainScene::~MainScene()
@@ -46,19 +47,18 @@ void MainScene::Init()
 	turn_manager_.StartTurn(character_manager_.player_);
 
 	for (auto& p : fs::directory_iterator("NPCs")) {
-		character_manager_.CreateNPCFromFile(p.path().string(), grid_, quest_manager_);
+		character_manager_.CreateNPCFromFile(p.path().string(), quest_manager_);
 	}
-
-	//Set up enemy.
-	character_manager_.Enemies_.push_back(new Enemy(40.0f, sf::Vector2f(), nullptr,
-		&character_manager_, 1, 1));
-	character_manager_.Enemies_.back()->setFillColor(sf::Color::Red);
-	grid_->InitialiseCharacter(character_manager_.Enemies_.back(), sf::Vector2i(3, 3));
 
 	//Pass in managers into classes as needed.
 	location_manager_->CreateQuestLocations(grid_, &character_manager_, quest_manager_);
 	turn_manager_.turn_ = TurnManager::Turn::Player;
 	character_manager_.SetLocationManager(location_manager_);
+
+	int random = rand() % 3 + 1;
+	for (int i = 0; i < random; i++) {
+		character_manager_.AddEnemySpawnPoint(grid_->GetRandomNodeWithoutCharacter());
+	}
 }
 
 void MainScene::Release()
@@ -76,7 +76,12 @@ bool MainScene::Update(float dt)
 		if (!c) {
 			turn_manager_.character_turn_->DoAction(dt, grid_);
 		}
-		grid_->grid_view_.setCenter(turn_manager_.character_turn_->getPosition());
+		if (turn_manager_.character_turn_) {
+			grid_->grid_view_.setCenter(turn_manager_.character_turn_->getPosition());
+		}
+	}
+	else {
+		turn_manager_.DetermineCharacterTurn();
 	}
 	return false;
 }
@@ -104,6 +109,11 @@ void MainScene::Render()
 
 	RenderUI();
 	EndDraw();
+}
+
+CharacterManager* MainScene::GetCharacterManager()
+{
+	return &character_manager_;
 }
 
 void MainScene::RenderUI()

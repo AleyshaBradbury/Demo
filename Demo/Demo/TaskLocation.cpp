@@ -1,4 +1,6 @@
 #include "TaskLocation.h"
+#include "Input.h"
+#include "Player.h"
 
 TaskLocation::TaskLocation(Node* node, sf::Texture* texture) :
 	Location(node, texture)
@@ -38,11 +40,19 @@ void TaskLocation::SetUpLocation()
 	}
 }
 
-void TaskLocation::Update(float dt)
+bool TaskLocation::Update(float dt, Player* player)
 {
-	for (int i = 0; i < Task_.size(); i++) {
-		if (Task_[i]->ButtonPressed()) {
-			return;
+	if (Input::GetMouseLeftDown()) {
+		for (int i = 0; i < Task_.size(); i++) {
+			if (Task_[i]->ButtonPressed()) {
+				Input::SetMouseLeftDown(false);
+				std::vector<std::string> memory;
+				memory.push_back("Task");
+				memory.push_back(Task_[i]->GetThingCollected());
+				player->AddMemory(memory);
+				return true;
+			}
 		}
 	}
+	return false;
 }

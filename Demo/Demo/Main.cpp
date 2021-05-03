@@ -64,7 +64,7 @@ int main() {
 	//Initialise Scene Objects.
 	MenuScene menu_scene_;
 	MainScene main_scene_;
-	LocationScene location_scene_;
+	LocationScene location_scene_(main_scene_.GetCharacterManager());
 	FailureScene failure_scene_;
 	StatsAndInventoryScene stats_and_inventory_scene_;
 

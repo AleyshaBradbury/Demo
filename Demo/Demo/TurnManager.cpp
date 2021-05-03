@@ -34,10 +34,10 @@ void TurnManager::DetermineCharacterTurn()
 			turn_num_ = 0;
 			break;
 		}
-		else if (character_manager_->Enemies_.size() > 0) {
-			turn_ = Turn::Enemy;
+		turn_ = Turn::Enemy;
+		turn_num_ = 0;
+		if (character_manager_->Enemies_.size() > 0) {
 			character_turn_ = character_manager_->Enemies_[0];
-			turn_num_ = 0;
 			break;
 		}
 		return;
@@ -47,14 +47,14 @@ void TurnManager::DetermineCharacterTurn()
 		- otherwise have the player set to have their turn.
 		else have the next npc have their turn.*/
 		if (turn_num_ >= character_manager_->Npcs_.size()) {
+			turn_ = Turn::Enemy;
+			turn_num_ = 0;
 			if (character_manager_->Enemies_.size() > 0) {
-				turn_ = Turn::Enemy;
 				character_turn_ = character_manager_->Enemies_[0];
-				turn_num_ = 0;
 			}
 			else {
-				turn_ = Turn::Player;
-				character_turn_ = character_manager_->player_;
+
+				return;
 			}
 		}
 		else {
@@ -65,6 +65,7 @@ void TurnManager::DetermineCharacterTurn()
 		/*If all of the enemies have had their turn then set the player to have their 
 		turn, else set the next enemy to have their turn.*/
 		if (turn_num_ >= character_manager_->Enemies_.size()) {
+			character_manager_->SpawnEnemies();
 			turn_ = Turn::Player;
 			character_turn_ = character_manager_->player_;
 		}

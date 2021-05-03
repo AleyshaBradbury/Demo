@@ -1,7 +1,8 @@
 #include "LocationScene.h"
 
-LocationScene::LocationScene()
+LocationScene::LocationScene(CharacterManager* character_manager)
 {
+	character_manager_ = character_manager;
 }
 
 void LocationScene::OnEnterLocation()
@@ -12,7 +13,10 @@ void LocationScene::OnEnterLocation()
 
 bool LocationScene::Update(float dt)
 {
-	location_->Update(dt);
+	if (character_manager_->player_->GetAction() > 0 && location_->Update(dt, 
+		character_manager_->player_)) {
+		character_manager_->player_->SpendAction();
+	}
 
 	if (Input::GetKeyDown(sf::Keyboard::Escape)) {
 		Input::SetKeyUp(sf::Keyboard::Escape);
@@ -26,5 +30,6 @@ void LocationScene::Render()
 {
 	StartDraw();
 	location_->RenderLocation();
+	character_manager_->player_->RenderIcons();
 	EndDraw();
 }

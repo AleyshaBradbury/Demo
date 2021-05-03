@@ -12,7 +12,7 @@ public:
 	void RenderLocation();
 
 	void SetUpLocation();
-	void Update(float dt);
+	bool Update(float dt, Player* player);
 
 private:
 	std::vector<Task*> Task_;

@@ -37,3 +37,8 @@ bool Quest::DoAction()
 void Quest::RenderExtra()
 {
 }
+
+std::vector<Quest::QuestDetails> Quest::GetRequirements()
+{
+	return Quest_Requirements_;
+}
