@@ -39,7 +39,7 @@ void MainScene::Init()
 	float grid_spacing = Grid::grid_spacing_;
 
 	//Set up player.
-	character_manager_.player_ = new Player(20.0f, sf::Vector2f(), nullptr,
+	character_manager_.player_ = new Player(5, sf::Vector2f(), nullptr,
 		&character_manager_, 1, 1);
 	character_manager_.player_->setFillColor(sf::Color::Green);
 	grid_->InitialiseCharacter(character_manager_.player_, sf::Vector2i(0, 0));
@@ -48,6 +48,10 @@ void MainScene::Init()
 
 	for (auto& p : fs::directory_iterator("NPCs")) {
 		character_manager_.CreateNPCFromFile(p.path().string(), quest_manager_);
+	}
+
+	for (auto& p : fs::directory_iterator("Enemies")) {
+		character_manager_.LoadEnemyTypesFromFile(p.path().string());
 	}
 
 	//Pass in managers into classes as needed.

@@ -64,8 +64,7 @@ void CharacterManager::SpawnEnemies()
 	int random = rand() % num_to_spawn_;
 	for (int i = 0; i < random; i++) {
 		if (current_open_spots.size() > 0) {
-			Enemies_.push_back(new Enemy(40.0f, sf::Vector2f(), nullptr,
-				this, 1, 1));
+			Enemies_.push_back(ChooseEnemyType());
 			Enemies_.back()->setFillColor(sf::Color::Red);
 			int random2 = rand() % current_open_spots.size();
 			grid_->InitialiseCharacter(Enemies_.back(), current_open_spots[random2]);
@@ -92,6 +91,24 @@ void CharacterManager::AddEnemySpawnPoint(Node* node)
 	if (std::find(Enemy_Spawn_Points_.begin(), Enemy_Spawn_Points_.end(), node) == Enemy_Spawn_Points_.end()) {
 		Enemy_Spawn_Points_.push_back(node);
 	}
+}
+
+std::string CharacterManager::GetEnemyDropByEnemyName(std::string enemy_name)
+{
+	for (auto enemy : Enemy_Types_) {
+		if (enemy.name_ == enemy_name) {
+			return enemy.drop_;
+		}
+	}
+	return std::string();
+}
+
+Enemy* CharacterManager::ChooseEnemyType()
+{
+	int random = rand() % Enemy_Types_.size();
+	return new Enemy(Enemy_Types_[random].max_health_, sf::Vector2f(), nullptr,
+		this, Enemy_Types_[random].movement_, Enemy_Types_[random].attack_,
+		Enemy_Types_[random].name_, Enemy_Types_[random].drop_);
 }
 
 void CharacterManager::CreateNPCFromFile(std::string file_name, QuestManager* quest_manager)
@@ -146,6 +163,54 @@ void CharacterManager::CreateNPCFromFile(std::string file_name, QuestManager* qu
 		Npcs_.back()->AddNeed(Needs[i]);
  }
 	grid_->InitialiseCharacter(Npcs_.back(), initial_position);
+}
+
+void CharacterManager::LoadEnemyTypesFromFile(std::string file_name)
+{
+	//Read in the enemy's data from file.
+	EnemyType enemy;
+
+	std::fstream file;
+	file.open(file_name);
+	std::string line, word, temp;
+
+	while (file >> temp) {
+		std::vector<std::string> row;
+
+		std::getline(file, line);
+		temp += line;
+
+		std::stringstream s(temp);
+
+		while (std::getline(s, word, ',')) {
+			row.push_back(word);
+		}
+
+		if (row.size() > 0) {
+			if (row[0] == "name") {
+				enemy.name_ = row[1];
+			}
+			else if (row[0] == "drop") {
+				enemy.drop_ = row[1];
+			}
+			else if (row[0] == "max health") {
+				enemy.max_health_ = std::stoi(row[1]);
+			}
+			else if (row[0] == "texture location") {
+				enemy.texture_location_ = row[1];
+			}
+			else if (row[0] == "movement") {
+				enemy.movement_ = std::stoi(row[1]);
+			}
+			else if (row[0] == "attack") {
+				enemy.attack_ = std::stoi(row[1]);
+			}
+			else if (row[0] == "attack strength") {
+				enemy.attack_strength_ = std::stoi(row[1]);
+			}
+		}
+	}
+	Enemy_Types_.push_back(enemy);
 }
 
 void CharacterManager::RenderAll()

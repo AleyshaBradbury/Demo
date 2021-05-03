@@ -4,10 +4,12 @@
 #include <iostream>
 
 Enemy::Enemy(int health, sf::Vector2f position, sf::Texture* texture,
-	CharacterManager* character_manager, int movements, int attacks) : 
-	Character("", health, position, texture, character_manager, movements, attacks)
+	CharacterManager* character_manager, int movements, int attacks, std::string name,
+	std::string drop) : 
+	Character(name, health, position, texture, character_manager, movements, attacks)
 {
 	is_enemy_ = true;
+	drop_ = drop;
 }
 
 Enemy::~Enemy()
@@ -56,6 +58,11 @@ void Enemy::DoAction(float dt, Grid* grid)
 		TurnManager::DetermineCharacterTurn();
 		ResetActions();
 	}
+}
+
+std::string Enemy::GetDropName()
+{
+	return drop_;
 }
 
 void Enemy::IncrementTurn()

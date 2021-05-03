@@ -9,6 +9,7 @@ Character::Character(std::string name, int health, sf::Vector2f position,
 		Grid::grid_spacing_ / 5.0f * 4.0f) , position, texture)
 {
 	max_health_ = health;
+	ResetHealth();
 	name_ = name;
 	overlap_ = false;
 	character_manager_ = character_manager;

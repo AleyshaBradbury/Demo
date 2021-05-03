@@ -48,6 +48,10 @@ std::string QuestManager::DetermineResource()
             resource = memories[i].what_happened_[1];
             break;
         }
+        else if (memories[i].what_happened_[0] == "Attack") {
+            resource = character_manager_->GetEnemyDropByEnemyName(memories[i].what_happened_[1]);
+            break;
+        }
     }
     return resource;
 }

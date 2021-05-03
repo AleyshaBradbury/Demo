@@ -42,16 +42,14 @@ void TaskLocation::SetUpLocation()
 
 bool TaskLocation::Update(float dt, Player* player)
 {
-	if (Input::GetMouseLeftDown()) {
-		for (int i = 0; i < Task_.size(); i++) {
-			if (Task_[i]->ButtonPressed()) {
-				Input::SetMouseLeftDown(false);
-				std::vector<std::string> memory;
-				memory.push_back("Task");
-				memory.push_back(Task_[i]->GetThingCollected());
-				player->AddMemory(memory);
-				return true;
-			}
+	for (int i = 0; i < Task_.size(); i++) {
+		if (Task_[i]->ButtonPressed()) {
+			Input::SetMouseLeftDown(false);
+			std::vector<std::string> memory;
+			memory.push_back("Task");
+			memory.push_back(Task_[i]->GetThingCollected());
+			player->AddMemory(memory);
+			return true;
 		}
 	}
 	return false;

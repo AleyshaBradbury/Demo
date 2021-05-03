@@ -6,10 +6,12 @@ class Enemy : public Character
 {
 public:
 	Enemy(int health, sf::Vector2f position, sf::Texture* texture, 
-		CharacterManager* character_manager, int movements, int attacks);
+		CharacterManager* character_manager, int movements, int attacks, 
+		std::string name, std::string drop);
 	~Enemy();
 
 	void DoAction(float dt, Grid* grid);
+	std::string GetDropName();
 
 private:
 	enum class TurnStages {
@@ -23,5 +25,7 @@ private:
 
 	GridObject* target_ = nullptr;
 	TurnStages stage_ = TurnStages::FindTarget;
+
+	std::string drop_;
 };
 

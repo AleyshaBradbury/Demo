@@ -14,5 +14,7 @@ public:
 private:
 	Location* location_ = nullptr;
 	CharacterManager* character_manager_;
+	float failed_action_timer_ = 0.0f;
+	sf::Text failed_action_text_;
 };
 

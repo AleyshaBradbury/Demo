@@ -23,7 +23,7 @@ bool Quest::DoAction()
 {
 	//Check if all of the task requirements are doable.
 	for (auto task : Quest_Requirements_) {
-		if (!ResourceManager::CanSubtractResource(task.resource_, -task.amount_)) {
+		if (!ResourceManager::CanAddResource(task.resource_, -task.amount_)) {
 			return false;
 		}
 	}

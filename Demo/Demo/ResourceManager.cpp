@@ -21,7 +21,7 @@ bool ResourceManager::AddResource(std::string resource_name, int resource_amount
 	return false;
 }
 
-bool ResourceManager::CanSubtractResource(std::string resource_name, int resource_amount)
+bool ResourceManager::CanAddResource(std::string resource_name, int resource_amount)
 {
 	if (resources.find(resource_name) != resources.end()) {
 		int new_amount = resources[resource_name] + resource_amount;

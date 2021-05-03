@@ -55,6 +55,7 @@ void Player::DoAction(float dt, Grid* grid)
 		Input::SetKeyUp(sf::Keyboard::Space);
 		return;
 	}
+	//If E is pressed, go to the inventory scene.
 	else if (Input::GetKeyDown(sf::Keyboard::E)) {
 		Input::SetKeyUp(sf::Keyboard::E);
 		SceneManager::ChangeScene(SceneManager::Scene::StatsAndInventory);
@@ -64,10 +65,12 @@ void Player::DoAction(float dt, Grid* grid)
 
 void Player::RenderTurnButton()
 {
+	//End the players turn.
 	if (turn_button_) {
 		GeneralVariables::window_.draw(*turn_button_);
 		turn_button_->RenderButtonText();
 	}
+	//DEBUG: skip to the start of the next player turn. 
 	if (DEBUG_skip_to_start_of_players_turn_) {
 		GeneralVariables::window_.draw(*DEBUG_skip_to_start_of_players_turn_);
 		DEBUG_skip_to_start_of_players_turn_->RenderButtonText();
@@ -83,7 +86,7 @@ void Player::CheckIfSpaceEmptyAndResolve(Node* node, Grid* grid)
 		return;
 	}
 
-	//If an NPC is in the node selected.
+	//If an NPC is in the node selected select the npc and show/hide their movement range.
 	for (int i = 0; i < character_manager_->Npcs_.size(); i++) {
 		if (character_manager_->Npcs_[i]->GetGridNode() == node) {
 			selected_character_ = character_manager_->Npcs_[i];
@@ -96,10 +99,21 @@ void Player::CheckIfSpaceEmptyAndResolve(Node* node, Grid* grid)
 	for (int i = 0; i < character_manager_->Enemies_.size(); i++) {
 		Enemy* enemy = character_manager_->Enemies_[i];
 		if (enemy->GetGridNode() == node) {
-			if (grid->CheckIfInRange(GetGridNode(), enemy->GetGridNode(), 1) && 
-				SpendAction() && enemy->SubtractHealth(attack_strength_)) {
-				character_manager_->DeleteDeadCharacter(enemy);
-			}
+			//If the player is within attack range then reduce the health of the enemy.
+				if (grid->CheckIfInRange(GetGridNode(), enemy->GetGridNode(), 1) &&
+					SpendAction()) {
+					std::vector<std::string> memory;
+					memory.push_back("Attack");
+					memory.push_back(enemy->GetName());
+					memory.push_back(std::to_string(attack_strength_));
+					if (enemy->SubtractHealth(attack_strength_)) {
+						ResourceManager::AddResource(enemy->GetDropName(), rand() % 2 + 1);
+						memory.push_back(enemy->GetDropName());
+						character_manager_->DeleteDeadCharacter(enemy);
+					}
+					AddMemory(memory);
+				}
+			//Else select the enemy and show/hide their movement range.
 			else {
 				selected_character_ = character_manager_->Enemies_[i];
 				character_manager_->Enemies_[i]->InvertMoveable();

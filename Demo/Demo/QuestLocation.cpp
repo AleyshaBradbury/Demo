@@ -50,30 +50,24 @@ void QuestLocation::SetUpLocation()
 
 bool QuestLocation::Update(float dt, Player* player)
 {
-	if (Input::GetMouseLeftDown()) {
-		for (int i = 0; i < Quest_.size(); i++) {
-			if (Quest_[i]->ButtonPressed()) {
-				Input::SetMouseLeftDown(false);
-				quest_manager_->DeleteQuest(Quest_[i], npc_);
-				npc_->AddCompletedQuest(Quest_[i]);
-				SetUpLocation();
-				std::vector<std::string> memory;
-				memory.push_back("Quest");
-				memory.push_back(npc_->GetName());
-				std::vector<Quest::QuestDetails> details_ = Quest_[i]->GetRequirements();
-				for (int i = 0; i < details_.size(); i++) {
-					memory.push_back(details_[i].resource_);
-				}
-				player->AddMemory(memory);
-				return true;
+	for (int i = 0; i < Quest_.size(); i++) {
+		if (Quest_[i]->ButtonPressed()) {
+			Input::SetMouseLeftDown(false);
+			//Add a memory of completing the quest to the player.
+			std::vector<std::string> memory;
+			memory.push_back("Quest");
+			memory.push_back(npc_->GetName());
+			std::vector<Quest::QuestDetails> details_ = Quest_[i]->GetRequirements();
+			for (int i = 0; i < details_.size(); i++) {
+				memory.push_back(details_[i].resource_);
 			}
-		}
-	}
+			player->AddMemory(memory);
 
-	if (Input::GetKeyDown(sf::Keyboard::G)) {
-		Input::SetKeyUp(sf::Keyboard::G);
-		quest_manager_->GenerateQuests(npc_);
-		SetUpLocation();
+			quest_manager_->DeleteQuest(Quest_[i], npc_);
+			npc_->AddCompletedQuest(Quest_[i]);
+			SetUpLocation();
+			return true;
+		}
 	}
 	return false;
 }

@@ -52,10 +52,18 @@ void LocationManager::CreateTaskLocations(Grid* grid)
 		grid->GetNodeAtPositionOrClosest(sf::Vector2i(-3, -3)),
 		&task_location_texture_));
 	Task_Locations_.back()->AddAction(new Task("Mine Ore", "ore", 1));
+	Task_Locations_.back()->AddAction(new Task("Mine Stone", "stone", 1));
 	Task_Locations_.push_back(new TaskLocation(
 		grid->GetNodeAtPositionOrClosest(sf::Vector2i(3, -3)),
 		&task_location_texture_));
-	Task_Locations_.back()->AddAction(new Task("Collect Stone", "stone", 1));
+	std::vector<std::string> task_requirements;
+	std::vector<int> amount_required;
+	task_requirements.push_back("ore");
+	amount_required.push_back(1);
+	task_requirements.push_back("wood");
+	amount_required.push_back(2);
+	Task_Locations_.back()->AddAction(new Task("Smelt Iron From Ore", "iron", 1,
+		task_requirements, amount_required));
 }
 
 void LocationManager::DeleteQuestLocation(QuestLocation* quest_location)
