@@ -12,10 +12,9 @@ void LocationScene::OnEnterLocation()
 
 bool LocationScene::Update(float dt)
 {
-	if (Input::GetMouseLeftDown()) {
-		location_->Update(dt);
-	}
-	else if (Input::GetKeyDown(sf::Keyboard::Escape)) {
+	location_->Update(dt);
+
+	if (Input::GetKeyDown(sf::Keyboard::Escape)) {
 		Input::SetKeyUp(sf::Keyboard::Escape);
 		SceneManager::ChangeScene(SceneManager::Scene::Main);
 		return true;

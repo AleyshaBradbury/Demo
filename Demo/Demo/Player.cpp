@@ -5,17 +5,18 @@
 #include "SceneManager.h"
 
 Player::Player(int health, sf::Vector2f position, sf::Texture* texture, 
-	CharacterManager* character_manager, int movements, int attacks) :
-	Character("player", health, position, texture, character_manager, movements, attacks)
+	CharacterManager* character_manager, unsigned int movements, unsigned int attacks) :
+	Character("player", health, position, texture, character_manager, movements, 
+		attacks, 2)
 {
 	sf::Vector2f button_size(105.0f, 35.0f);
 	turn_button_ = new Button("End Turn",
 		sf::Vector2f(GeneralVariables::window_.getSize().x - button_size.x - 10.0f, 10.0f),
 		button_size, 20);
-	sf::Vector2f button_size2 = sf::Vector2f(315.0f, 35.0f);
+	button_size = sf::Vector2f(315.0f, 35.0f);
 	DEBUG_skip_to_start_of_players_turn_ = new Button("(DEBUG) Skip to Start Player",
-		sf::Vector2f(GeneralVariables::window_.getSize().x - button_size.x - button_size2.x - 20.0f, 10.0f),
-		button_size2, 20);
+		sf::Vector2f(turn_button_->getPosition().x - button_size.x - 20.0f, 10.0f),
+		button_size, 20);
 }
 
 Player::~Player()
@@ -93,9 +94,16 @@ void Player::CheckIfSpaceEmptyAndResolve(Node* node, Grid* grid)
 
 	//If an enemy is in the node selected.
 	for (int i = 0; i < character_manager_->Enemies_.size(); i++) {
-		if (character_manager_->Enemies_[i]->GetGridNode() == node) {
-			selected_character_ = character_manager_->Enemies_[i];
-			character_manager_->Enemies_[i]->InvertMoveable();
+		Enemy* enemy = character_manager_->Enemies_[i];
+		if (enemy->GetGridNode() == node) {
+			if (grid->CheckIfInRange(GetGridNode(), enemy->GetGridNode(), 1) && 
+				SpendAction() && enemy->SubtractHealth(attack_strength_)) {
+				character_manager_->DeleteDeadCharacter(enemy);
+			}
+			else {
+				selected_character_ = character_manager_->Enemies_[i];
+				character_manager_->Enemies_[i]->InvertMoveable();
+			}
 			return;
 		}
 	}

@@ -6,7 +6,8 @@ class Player : public Character
 {
 public:
 	Player(int health, sf::Vector2f position, sf::Texture* texture, 
-		CharacterManager* character_manager, int movements, int attacks);
+		CharacterManager* character_manager, unsigned int movements, 
+		unsigned int attacks);
 	~Player();
 	void DoAction(float dt, Grid* grid);
 	void RenderTurnButton();

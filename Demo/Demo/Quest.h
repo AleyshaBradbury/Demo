@@ -7,9 +7,7 @@ class Quest : public ThingsToDoAtLocation
 {
 public:
 	struct QuestDetails {
-		bool complete = false;
-		std::string type_;
-		std::string action_resource_;
+		std::string resource_;
 		int amount_;
 	};
 	Quest(std::string quest_name, std::vector<QuestDetails> Quest_Requirements);

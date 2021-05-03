@@ -11,8 +11,9 @@ class Character : public GridObject, public Memories
 {
 public:
 	Character(std::string name, int health, sf::Vector2f position,
-		sf::Texture* texture, CharacterManager* character_manager, unsigned int num_movement,
-		unsigned int num_attacks);
+		sf::Texture* texture, CharacterManager* character_manager, 
+		unsigned int num_movement, unsigned int num_attacks, 
+		unsigned int attack_strength = 1);
 	~Character();
 
 	virtual void DoAction(float dt, Grid* grid) = 0;
@@ -40,6 +41,8 @@ protected:
 	void ResetActions();
 
 	bool is_enemy_ = false;
+
+	unsigned int attack_strength_ = 1;
 
 	std::string name_ = "";
 	unsigned int movement_ = 4;

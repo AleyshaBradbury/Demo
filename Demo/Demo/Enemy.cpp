@@ -40,7 +40,7 @@ void Enemy::DoAction(float dt, Grid* grid)
 		if (target_ && grid->CheckIfInRange(GetGridNode(), target_->GetGridNode(), 1)) {
 			if (GetAction() > 0) {
 				std::cout << "Enemy: Attacking target.\n";
-				if (target_->SubtractHealth(1)) {
+				if (target_->SubtractHealth(attack_strength_)) {
 					character_manager_->DeleteDeadCharacter((Character*)target_);
 					target_ = nullptr;
 				}

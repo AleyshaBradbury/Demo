@@ -13,6 +13,8 @@ Task::Task(std::string task_name, std::string thing_collected, int thing_per_tas
 	title_.setString(task_name_);
 
 	other_text_.setString("Gain " + std::to_string(thing_per_task) + " " + thing_collected + ".");
+
+	setSize(sf::Vector2f(getSize().x, getSize().y + other_text_size_ + 2));
 }
 
 std::string Task::GetTaskName()

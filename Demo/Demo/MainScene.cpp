@@ -21,6 +21,8 @@ MainScene::MainScene()
 	grid_->grid_view_.setCenter(sf::Vector2f(0.0f, 0.0f));
 
 	TurnManager::character_manager_ = &character_manager_;
+
+	quest_manager_ = new QuestManager(&character_manager_);
 }
 
 MainScene::~MainScene()
@@ -44,7 +46,7 @@ void MainScene::Init()
 	turn_manager_.StartTurn(character_manager_.player_);
 
 	for (auto& p : fs::directory_iterator("NPCs")) {
-		character_manager_.CreateNPCFromFile(p.path().string(), grid_);
+		character_manager_.CreateNPCFromFile(p.path().string(), grid_, quest_manager_);
 	}
 
 	//Set up enemy.
@@ -53,8 +55,7 @@ void MainScene::Init()
 	character_manager_.Enemies_.back()->setFillColor(sf::Color::Red);
 	grid_->InitialiseCharacter(character_manager_.Enemies_.back(), sf::Vector2i(3, 3));
 
-	//Set up the quest manager and pass in managers into classes as needed.
-	quest_manager_ = new QuestManager(&character_manager_);
+	//Pass in managers into classes as needed.
 	location_manager_->CreateQuestLocations(grid_, &character_manager_, quest_manager_);
 	turn_manager_.turn_ = TurnManager::Turn::Player;
 	character_manager_.SetLocationManager(location_manager_);

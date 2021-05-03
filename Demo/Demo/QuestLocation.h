@@ -19,5 +19,6 @@ private:
 
 	std::vector<Quest*> Quest_;
 	NPC* npc_;
+	sf::Text no_quest_text_;
 };
 

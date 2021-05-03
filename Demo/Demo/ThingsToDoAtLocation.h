@@ -16,6 +16,7 @@ public:
 protected:
 	sf::Text title_;
 	sf::Text other_text_;
+	const unsigned int other_text_size_ = 20;
 	Button* do_action_button_ = nullptr;
 };
 

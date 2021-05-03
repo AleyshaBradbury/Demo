@@ -33,6 +33,7 @@ void TaskLocation::SetUpLocation()
 		for (int i = 0; i < Task_.size(); i++) {
 			Task_[i]->SetUpPositionOnScreen(sf::Vector2f(500.0f, positionY));
 			positionY += sizeY + 5.0f;
+			sizeY = Task_[i]->getSize().y;
 		}
 	}
 }

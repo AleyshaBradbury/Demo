@@ -13,7 +13,7 @@ public:
 	//A vector of npcs that are alive.
 	std::vector<NPC*> Npcs_;
 	//Load in NPCs from file.
-	void CreateNPCFromFile(std::string file_name, Grid* grid);
+	void CreateNPCFromFile(std::string file_name, Grid* grid, QuestManager* quest_manager);
 	//A vector of enemies that are alive.
 	std::vector<Enemy*> Enemies_;
 

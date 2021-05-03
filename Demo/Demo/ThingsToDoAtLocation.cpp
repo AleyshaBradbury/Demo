@@ -3,7 +3,7 @@
 #include "Input.h"
 
 ThingsToDoAtLocation::ThingsToDoAtLocation() :
-	GameObject(sf::Vector2f(298.0f, 100.0f), sf::Vector2f(0.0f, 0.0f), nullptr)
+	GameObject(sf::Vector2f(298.0f, 50.0f), sf::Vector2f(0.0f, 0.0f), nullptr)
 {
 	setFillColor(sf::Color(100, 100, 100, 255));
 
@@ -11,7 +11,9 @@ ThingsToDoAtLocation::ThingsToDoAtLocation() :
 	title_.setCharacterSize(30);
 
 	other_text_.setFont(GeneralVariables::font_);
-	other_text_.setCharacterSize(20);
+	other_text_.setCharacterSize(other_text_size_);
+
+
 
 	do_action_button_ = new Button("Do Action", sf::Vector2f(), sf::Vector2f(100.0f, 25.0f),
 		20, sf::Vector2f(2, 2.5f));

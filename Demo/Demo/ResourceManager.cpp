@@ -20,3 +20,18 @@ bool ResourceManager::AddResource(std::string resource_name, int resource_amount
 	}
 	return false;
 }
+
+bool ResourceManager::CanSubtractResource(std::string resource_name, int resource_amount)
+{
+	if (resources.find(resource_name) != resources.end()) {
+		int new_amount = resources[resource_name] + resource_amount;
+		if (new_amount >= 0) {
+			return true;
+		}
+	}
+	//If the resource didnt already exist in the characters inventory.
+	else {
+		resources.insert(std::pair<std::string, int>(resource_name, 0));
+	}
+	return false;
+}

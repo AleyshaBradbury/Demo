@@ -3,8 +3,8 @@
 #include "Grid.h"
 
 Character::Character(std::string name, int health, sf::Vector2f position,
-	sf::Texture* texture, CharacterManager* character_manager, unsigned int num_movement, 
-	unsigned int num_attacks) :
+	sf::Texture* texture, CharacterManager* character_manager, 
+	unsigned int num_movement, unsigned int num_attacks, unsigned int attack_strength) :
 	GridObject(sf::Vector2f(Grid::grid_spacing_ / 5.0f * 4.0f,
 		Grid::grid_spacing_ / 5.0f * 4.0f) , position, texture)
 {
@@ -14,6 +14,7 @@ Character::Character(std::string name, int health, sf::Vector2f position,
 	character_manager_ = character_manager;
 	max_movement_actions_ = num_movement;
 	max_actions_ = num_attacks;
+	attack_strength_ = attack_strength;
 
 	movement_icon_ = new Icon(sf::Vector2f(5.0f, 5.0f), sf::Vector2f(40.0f, 50.0f));
 	movement_icon_->setFillColor(sf::Color::Blue);

@@ -55,7 +55,7 @@ void CharacterManager::SetLocationManager(LocationManager* location_manager)
 	location_manager_ = location_manager;
 }
 
-void CharacterManager::CreateNPCFromFile(std::string file_name, Grid* grid)
+void CharacterManager::CreateNPCFromFile(std::string file_name, Grid* grid, QuestManager* quest_manager)
 {
 	//Read in the npcs data from file and then initialise that character onto the grid.
 	std::string name = "";
@@ -101,7 +101,7 @@ void CharacterManager::CreateNPCFromFile(std::string file_name, Grid* grid)
 		}
 	}
 
-	Npcs_.push_back(new NPC(name, max_health, sf::Vector2f(), nullptr, this, 1, 0));
+	Npcs_.push_back(new NPC(name, max_health, sf::Vector2f(), nullptr, this, 1, 0, quest_manager));
 	Npcs_.back()->setFillColor(sf::Color::Blue);
 	for (int i = 0; i < Needs.size(); i++) {
 		Npcs_.back()->AddNeed(Needs[i]);
