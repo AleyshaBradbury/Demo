@@ -45,7 +45,7 @@ bool Grid::InitialiseCharacter(Character* character, Node* node)
 
 bool Grid::MoveCharacter(Character* character, Node* node)
 {
-	if (character && node &&
+	if (character && node && !node->GetCharacterOnTile() &&
 		std::find(character->Moveable_Nodes_.begin(), character->Moveable_Nodes_.end(),
 		node) != character->Moveable_Nodes_.end()) {
 		movement_nodes_ = pathfinding_.Pathfind(character->GetGridNode(), node, Nodes_);
@@ -64,7 +64,7 @@ void Grid::MoveCharacter(Character* character, sf::Vector2i node_position)
 
 void Grid::MoveCharacterTowardsTarget(Character* character, GridObject* target)
 {
-	//Find the path between the two points. max_distance == 1000 because its irellevant.
+	//Find the path between the two points. max_distance == 1000 because its irrelevant.
 	std::vector<Node*> Path = pathfinding_.Pathfind(character->GetGridNode(),
 		target->GetGridNode(), Nodes_, 1000);
 	if (Path.size() > 0) {
@@ -77,7 +77,7 @@ void Grid::MoveCharacterTowardsTarget(Character* character, GridObject* target)
 				node_position = Path[Path.size() - 2];
 			}
 			Path.pop_back();
-		} while (node_position && !MoveCharacter(character, node_position));
+		} while (Path.size() > 0 && node_position && !MoveCharacter(character, node_position));
 	}
 }
 
@@ -206,22 +206,22 @@ bool Grid::CheckIfInRange(Node* node1, Node* node2, int max_distance)
 	return false;
 }
 
-GridObject* Grid::FindClosestTarget(GridObject* enemy)
+Character* Grid::FindClosestTarget(Character* character)
 {
-	GridObject* closest_object = nullptr;
+	Character* closest_object = nullptr;
 	float closest_distance_ = 10000.0f;
 	//For every node, check if there is a character on that tile.
 	for (int i = 0; i < Nodes_.size(); i++) {
-		Character* character = Nodes_[i]->GetCharacterOnTile();
-		if (character && !character->isEnemy()) {
+		Character* character2 = Nodes_[i]->GetCharacterOnTile();
+		if (character2 && !character2->isEnemy()) {
 			//Get the distance between the character and the enemy.
 			float distance = GeneralFunctions::DistanceBetweenTwoObjects(
-				enemy->GetGridNode()->GetGridPosition(), character->GetGridNode()->GetGridPosition());
+				character->GetGridNode()->GetGridPosition(), character2->GetGridNode()->GetGridPosition());
 			//If the character is closer than the current closest set the character to
 			//be the current closest.
 			if (distance < closest_distance_) {
 				closest_distance_ = distance;
-				closest_object = character;
+				closest_object = character2;
 			}
 		}
 	}
@@ -289,7 +289,7 @@ void Grid::SetGridObjectPositionOnGrid(GridObject* game_object, sf::Vector2i pos
 void Grid::SetGridObjectPositionOnGrid(GridObject* game_object, Node* target_node)
 {
 	if (target_node) {
-		game_object->MoveObject(sf::Vector2f(
+		game_object->setPosition(sf::Vector2f(
 			target_node->GetGridPosition().x * grid_spacing_ + grid_spacing_ / 2.0f,
 			target_node->GetGridPosition().y * grid_spacing_ + grid_spacing_ / 2.0f));
 		game_object->SetGridNode(target_node);
@@ -305,6 +305,9 @@ void Grid::SetCharacterPositionOnGrid(Character* character, sf::Vector2i positio
 
 void Grid::SetCharacterPositionOnGrid(Character* character, Node* target_node)
 {
+	if (character->GetGridNode()) {
+		character->GetGridNode()->SetCharacterOnTile(nullptr);
+	}
 	if (target_node) {
 		character->SetGridNode(target_node);
 		target_node->SetCharacterOnTile(character);

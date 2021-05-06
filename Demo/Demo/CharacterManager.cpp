@@ -3,6 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include "Grid.h"
+#include <iostream>
 
 
 void CharacterManager::DeleteAll()
@@ -21,14 +22,14 @@ void CharacterManager::DeleteAll()
 	player_ = NULL;
 }
 
-void CharacterManager::DeleteDeadCharacter(Character* target)
+void CharacterManager::DeleteDeadGoodCharacter(std::string character_name)
 {
-	if (target == player_) {
+	if (character_name == player_->GetName()) {
 		SceneManager::ChangeScene(SceneManager::Scene::Failure);
 		return;
 	}
 	for (int i = 0; i < Npcs_.size(); i++) {
-		if (target == Npcs_[i]) {
+		if (character_name == Npcs_[i]->GetName()) {
 			for (int i = 0; i < 4; i++) {
 				if (Npcs_[i]->GetGridNode()->GetNeighbour(i)) {
 					location_manager_->DeleteQuestLocation((QuestLocation*)Npcs_[i]->GetGridNode()->GetNeighbour(i)->GetLocation());
@@ -40,9 +41,12 @@ void CharacterManager::DeleteDeadCharacter(Character* target)
 			return;
 		}
 	}
+}
 
+void CharacterManager::DeleteDeadEnemy(Enemy* enemy)
+{
 	for (int i = 0; i < Enemies_.size(); i++) {
-		if (target == Enemies_[i]) {
+		if (enemy == Enemies_[i]) {
 			delete Enemies_[i];
 			Enemies_.erase(Enemies_.begin() + i);
 			return;
@@ -62,6 +66,13 @@ void CharacterManager::SpawnEnemies()
 	}
 
 	int random = rand() % num_to_spawn_;
+	if (!spawned_before_) {
+		random++;
+		spawned_before_ = true;
+	}
+	else if (random == 0) {
+		spawned_before_ = false;
+	}
 	for (int i = 0; i < random; i++) {
 		if (current_open_spots.size() > 0) {
 			Enemies_.push_back(ChooseEnemyType());
@@ -101,6 +112,54 @@ std::string CharacterManager::GetEnemyDropByEnemyName(std::string enemy_name)
 		}
 	}
 	return std::string();
+}
+
+void CharacterManager::CreateRelationship(NPC* npc, std::string other_character)
+{
+	if (other_character == "Player") {
+		int num = rand() % 10;
+		npc->AddRelationshipWithCharacter("Player", num);
+	}
+	else {
+		for (int i = 0; i < Npcs_.size(); i++) {
+			if (Npcs_[i]->GetName() == other_character) {
+				int random = rand() % 10;
+				npc->AddRelationshipWithCharacter(other_character, random);
+				random += std::max(std::min((rand() % 5 - 2), 9), 0);
+				Npcs_[i]->AddRelationshipWithCharacter(npc->GetName(), random);
+				return;
+			}
+		}
+	}
+}
+
+void CharacterManager::ChangeRelationshipsAfterQuest(NPC* npc)
+{
+	npc->ChangeRelationshipWithCharacter("Player", 1);
+	for (auto& relationship : npc->GetRelationships()) {
+		NPC* other_npc = FindNPCByName(relationship.first);
+		if (other_npc) {
+			if (relationship.second > 6) {
+				uint32_t weight = 9 - relationship.second;
+				uint32_t random = 0;
+				if (weight != 0) {
+					random = rand() % weight;
+				}
+				if (random == 0) {
+					other_npc->ChangeRelationshipWithCharacter("Player", 1);
+				}
+			}
+			else if (relationship.second < 3) {
+				uint32_t random = 0;
+				if (relationship.second != 0) {
+					random = rand() % relationship.second;
+				}
+				if (random == 0) {
+					other_npc->ChangeRelationshipWithCharacter("Player", -1);
+				}
+			}
+		}
+	}
 }
 
 Enemy* CharacterManager::ChooseEnemyType()
@@ -163,6 +222,21 @@ void CharacterManager::CreateNPCFromFile(std::string file_name, QuestManager* qu
 		Npcs_.back()->AddNeed(Needs[i]);
  }
 	grid_->InitialiseCharacter(Npcs_.back(), initial_position);
+
+	CreateRelationship(Npcs_.back(), "Player");
+	for (int i = 0; i < Npcs_.size() - 1; i++) {
+		CreateRelationship(Npcs_.back(), Npcs_[i]->GetName());
+	}
+}
+
+NPC* CharacterManager::FindNPCByName(std::string name)
+{
+	for (auto& npc : Npcs_) {
+		if (npc->GetName() == name) {
+			return npc;
+		}
+	}
+	return nullptr;
 }
 
 void CharacterManager::LoadEnemyTypesFromFile(std::string file_name)

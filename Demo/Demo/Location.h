@@ -16,6 +16,9 @@ public:
 	virtual void SetUpLocation() = 0;
 	virtual bool Update(float dt, Player* player) = 0;
 
+protected:
+	const float left_size_start_ = 500.0f;
+
 private:
 	sf::RectangleShape indicator_;
 };

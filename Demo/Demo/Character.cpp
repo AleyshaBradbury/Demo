@@ -8,6 +8,14 @@ Character::Character(std::string name, int health, sf::Vector2f position,
 	GridObject(sf::Vector2f(Grid::grid_spacing_ / 5.0f * 4.0f,
 		Grid::grid_spacing_ / 5.0f * 4.0f) , position, texture)
 {
+	health_text_.setCharacterSize(30.0f);
+	health_text_.setFillColor(sf::Color::White);
+	health_text_.setFont(GeneralVariables::font_);
+	health_text_.setOutlineColor(sf::Color::Black);
+	health_text_.setOutlineThickness(2.0f);
+
+	ResetHealth();
+
 	max_health_ = health;
 	ResetHealth();
 	name_ = name;
@@ -21,6 +29,9 @@ Character::Character(std::string name, int health, sf::Vector2f position,
 	movement_icon_->setFillColor(sf::Color::Blue);
 	actions_icon_ = new Icon(sf::Vector2f(55.0f, 5.0f), sf::Vector2f(40.0f, 50.0f));
 	actions_icon_->setFillColor(sf::Color::Red);
+	attack_strength_icon_ = new Icon(sf::Vector2f(105.0f, 5.0f), sf::Vector2f(40.0f, 50.0f));
+	attack_strength_icon_->setFillColor(sf::Color(200, 0, 0, 255));
+	attack_strength_icon_->SetText(std::to_string(attack_strength_));
 
 	setOrigin(getSize() / 2.0f);
 
@@ -32,22 +43,44 @@ Character::~Character()
 	grid_node_->SetCharacterOnTile(nullptr);
 }
 
+void Character::ResetHealth()
+{
+	health_ = max_health_;
+	SetHealthText();
+}
+
+bool Character::SubtractHealth(int health)
+{
+	health_ -= health;
+	health = (int)fminf(health, max_health_);
+	SetHealthText();
+	if (health_ <= 0) {
+		return true;
+	}
+	return false;
+}
+
+int Character::GetHealth()
+{
+	return health_;
+}
+
 void Character::AddMemory(std::vector<std::string> what_happened)
 {
 	Memories::AddMemory(what_happened, grid_node_);
 }
 
-unsigned int Character::GetMovement()
+uint32_t Character::GetMovement()
 {
 	return movement_;
 }
 
-unsigned int Character::GetMovementActions()
+uint32_t Character::GetMovementActions()
 {
 	return num_movement_actions_;
 }
 
-unsigned int Character::GetAction()
+uint32_t Character::GetAction()
 {
 	return num_actions_;
 }
@@ -100,6 +133,12 @@ void Character::RenderIcons()
 {
 	actions_icon_->Render();
 	movement_icon_->Render();
+	attack_strength_icon_->Render();
+}
+
+void Character::RenderHealthText()
+{
+	GeneralVariables::window_.draw(health_text_);
 }
 
 bool Character::isEnemy()
@@ -112,10 +151,64 @@ std::string Character::GetName()
 	return name_;
 }
 
+void Character::ChangeMaxHealth(int diff)
+{
+	max_health_ += diff;
+}
+
+void Character::ChangeMovementActions(int diff)
+{
+	max_movement_actions_ += diff;
+}
+
+void Character::ChangeActions(int diff)
+{
+	max_actions_ += diff;
+}
+
+void Character::ChangeMovement(int diff)
+{
+	movement_ += diff;
+}
+
+void Character::ChangeAttackStrength(int diff)
+{
+	attack_strength_ += diff;
+	attack_strength_icon_->SetText(std::to_string(attack_strength_));
+}
+
+int Character::GetMaxHealth()
+{
+	return max_health_;
+}
+
+uint32_t Character::GetAttackStrength()
+{
+	return attack_strength_;
+}
+
+float Character::GetDistanceFromCharacter(Character* character)
+{
+	sf::Vector2i position1 = GetGridNode()->GetGridPosition();
+	sf::Vector2i position2 = character->GetGridNode()->GetGridPosition();
+	return sqrtf(powf(position1.x - position2.x, 2.0f) + powf(position1.y - position2.y, 2.0f));
+}
+
+void Character::MoveObject(sf::Vector2f position)
+{
+	setPosition(position);
+	health_text_.setPosition(position - sf::Vector2f(9.0f, 20.0f));
+}
+
 void Character::ResetActions()
 {
 	num_movement_actions_ = max_movement_actions_;
 	num_actions_ = max_actions_;
 	actions_icon_->SetText(std::to_string(num_actions_));
 	movement_icon_->SetText(std::to_string(num_movement_actions_));
+}
+
+void Character::SetHealthText()
+{
+	health_text_.setString(std::to_string(health_));
 }

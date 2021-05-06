@@ -1,6 +1,7 @@
 #include "Quest.h"
 #include "GeneralVariables.h"
 #include "ResourceManager.h"
+#include "Input.h"
 
 Quest::Quest(std::string quest_name, std::vector<QuestDetails> Quest_Requirements) :
 	ThingsToDoAtLocation()
@@ -17,6 +18,9 @@ Quest::Quest(std::string quest_name, std::vector<QuestDetails> Quest_Requirement
 	setSize(sf::Vector2f(getSize().x,
 		getSize().y + Quest_Requirements_.size() * (other_text_size_ + 2)));
 	other_text_.setString(details);
+
+	refuse_button_ = new Button("Refuse", sf::Vector2f(), sf::Vector2f(100.0f, 25.0f),
+		20, sf::Vector2f(2, 2.5f));
 }
 
 bool Quest::DoAction()
@@ -36,6 +40,22 @@ bool Quest::DoAction()
 
 void Quest::RenderExtra()
 {
+	GeneralVariables::window_.draw(*refuse_button_);
+	refuse_button_->RenderButtonText();
+}
+
+bool Quest::DeleteButtonPressed()
+{
+	if (refuse_button_->Collision(GeneralVariables::window_.mapPixelToCoords(Input::GetMouse()))) {
+		return true;
+	}
+	return false;
+}
+
+void Quest::SetButtonPosition(sf::Vector2f position)
+{
+	sf::Vector2f button_position_ = sf::Vector2f(sf::Vector2f(90.0f, getSize().y - 30.0f));
+	refuse_button_->SetPosition(position + button_position_);
 }
 
 std::vector<Quest::QuestDetails> Quest::GetRequirements()

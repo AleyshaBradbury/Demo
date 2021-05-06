@@ -6,15 +6,17 @@
 class LocationScene : public Scene
 {
 public:
-	LocationScene(CharacterManager* character_manager_);
+	LocationScene(CharacterManager* character_manager_, InfoWindow* info_window);
 	void OnEnterLocation();
 	bool Update(float dt);
 	void Render();
 
+	static float failed_action_timer_;
+
 private:
+	InfoWindow* info_window_ = nullptr;
 	Location* location_ = nullptr;
 	CharacterManager* character_manager_;
-	float failed_action_timer_ = 0.0f;
 	sf::Text failed_action_text_;
 };
 

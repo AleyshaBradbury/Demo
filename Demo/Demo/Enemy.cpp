@@ -39,10 +39,15 @@ void Enemy::DoAction(float dt, Grid* grid)
 	case TurnStages::Attack:
 		if (target_ && grid->CheckIfInRange(GetGridNode(), target_->GetGridNode(), 1)) {
 			if (GetAction() > 0) {
-				if (target_->SubtractHealth(attack_strength_)) {
-					character_manager_->DeleteDeadCharacter((Character*)target_);
+				if (target_->GetName() == "Player") {
+					Player* player = (Player*)target_;
+					player->SetInfoWindow(false);
+				}
+				else if (target_->SubtractHealth(attack_strength_)) {
+					character_manager_->DeleteDeadGoodCharacter(target_->GetName());
 					target_ = nullptr;
 				}
+				
 				SpendAction();
 			}
 			else {

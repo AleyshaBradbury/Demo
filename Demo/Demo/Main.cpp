@@ -16,6 +16,8 @@
 #include "FailureScene.h"
 #include "StatsAndInventoryScene.h"
 
+#include "InfoWindow.h"
+
 //
 //Declaring Static Members
 //
@@ -48,6 +50,9 @@ sf::Font GeneralVariables::font_;
 //Resource Manager static members.
 std::unordered_map<std::string, unsigned int> ResourceManager::resources;
 
+//Location Scene static members.
+float LocationScene::failed_action_timer_ = 0.0f;
+
 int main() {
 
 	srand((int)time(NULL));
@@ -61,10 +66,12 @@ int main() {
 	
 	GeneralVariables::font_.loadFromFile("fonts/consola.ttf");
 
+	InfoWindow info_window_;
+
 	//Initialise Scene Objects.
 	MenuScene menu_scene_;
-	MainScene main_scene_;
-	LocationScene location_scene_(main_scene_.GetCharacterManager());
+	MainScene main_scene_(&info_window_);
+	LocationScene location_scene_(main_scene_.GetCharacterManager(), &info_window_);
 	FailureScene failure_scene_;
 	StatsAndInventoryScene stats_and_inventory_scene_;
 

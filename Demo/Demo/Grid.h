@@ -33,7 +33,7 @@ public:
 	void SetCharacterPositionOnGrid(Character* character, Node* target_node);
 
 	//Find closest target for the enemy.
-	GridObject* FindClosestTarget(GridObject* enemy);
+	Character* FindClosestTarget(Character* enemy);
 
 	Node* GetNodeAtPositionOrClosest(const sf::Vector2i node_position);
 	Node* GetRandomNodeWithoutCharacter();

@@ -5,10 +5,13 @@
 #include "SceneManager.h"
 
 Player::Player(int health, sf::Vector2f position, sf::Texture* texture, 
-	CharacterManager* character_manager, unsigned int movements, unsigned int attacks) :
-	Character("player", health, position, texture, character_manager, movements, 
+	CharacterManager* character_manager, unsigned int movements, unsigned int attacks,
+	InfoWindow* info_window) :
+	Character("Player", health, position, texture, character_manager, movements, 
 		attacks, 2)
 {
+	info_window_ = info_window;
+
 	sf::Vector2f button_size(105.0f, 35.0f);
 	turn_button_ = new Button("End Turn",
 		sf::Vector2f(GeneralVariables::window_.getSize().x - button_size.x - 10.0f, 10.0f),
@@ -77,6 +80,18 @@ void Player::RenderTurnButton()
 	}
 }
 
+void Player::SetInfoWindow(bool reward)
+{
+	info_window_->ShowWindow(reward);
+}
+
+void Player::CheckDead()
+{
+	if (GetHealth() <= 0) {
+		character_manager_->DeleteDeadGoodCharacter("Player");
+	}
+}
+
 void Player::CheckIfSpaceEmptyAndResolve(Node* node, Grid* grid)
 {
 	//If the player is in the node selected.
@@ -109,7 +124,8 @@ void Player::CheckIfSpaceEmptyAndResolve(Node* node, Grid* grid)
 					if (enemy->SubtractHealth(attack_strength_)) {
 						ResourceManager::AddResource(enemy->GetDropName(), rand() % 2 + 1);
 						memory.push_back(enemy->GetDropName());
-						character_manager_->DeleteDeadCharacter(enemy);
+						RelationshipChangeWhenEnemyDies();
+						character_manager_->DeleteDeadEnemy(enemy);
 					}
 					AddMemory(memory);
 				}
@@ -125,5 +141,15 @@ void Player::CheckIfSpaceEmptyAndResolve(Node* node, Grid* grid)
 	//If nobody is in the node selected then move to that node.
 	if (GetMovementActions() > 0 && grid->MoveCharacter(this, node)) {
 		SpendMovement();
+	}
+}
+
+void Player::RelationshipChangeWhenEnemyDies()
+{
+	for (auto& npc : character_manager_->Npcs_) {
+		if (GetDistanceFromCharacter(npc) < 4 && rand() % 3 == 0) {
+			npc->ChangeRelationshipWithCharacter("Player", 1);
+			npc->rescued_time_ = 3;
+		}
 	}
 }

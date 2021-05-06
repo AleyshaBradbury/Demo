@@ -11,11 +11,12 @@
 #include "LocationManager.h"
 #include "LocationScene.h"
 #include "QuestManager.h"
+#include "InfoWindow.h"
 
 class MainScene : public Scene
 {
 public:
-	MainScene();
+	MainScene(InfoWindow* info_window);
 	~MainScene();
 	void Init();
 	void Release();
@@ -32,6 +33,7 @@ private:
 	TurnManager turn_manager_;
 
 	LocationScene* location_scene_ = nullptr;
+	InfoWindow* info_window_ = nullptr;
 
 	CharacterManager character_manager_;
 

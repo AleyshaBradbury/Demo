@@ -15,10 +15,16 @@ public:
 	bool Update(float dt, Player* player);
 
 private:
-	QuestManager* quest_manager_;
+	std::string GetRelationshipsText();
+	std::string GetNeedsText();
+
+	QuestManager* quest_manager_ = nullptr;
 
 	std::vector<Quest*> Quest_;
-	NPC* npc_;
+	NPC* npc_ = nullptr;
 	sf::Text no_quest_text_;
+	sf::Text npc_name_text_;
+	sf::Text npc_relationships_text_;
+	sf::Text npc_needs_text_;
 };
 

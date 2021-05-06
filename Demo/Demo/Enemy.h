@@ -23,7 +23,7 @@ private:
 
 	void IncrementTurn();
 
-	GridObject* target_ = nullptr;
+	Character* target_ = nullptr;
 	TurnStages stage_ = TurnStages::FindTarget;
 
 	std::string drop_;

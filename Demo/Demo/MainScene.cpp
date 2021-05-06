@@ -9,8 +9,10 @@
 
 namespace fs = std::filesystem;
 
-MainScene::MainScene()
+MainScene::MainScene(InfoWindow* info_window)
 {
+	info_window_ = info_window;
+
 	location_manager_ = new LocationManager();
 	grid_ = new Grid(location_manager_);
 	location_manager_->CreateTaskLocations(grid_);
@@ -40,11 +42,13 @@ void MainScene::Init()
 
 	//Set up player.
 	character_manager_.player_ = new Player(5, sf::Vector2f(), nullptr,
-		&character_manager_, 1, 1);
+		&character_manager_, 1, 1, info_window_);
 	character_manager_.player_->setFillColor(sf::Color::Green);
 	grid_->InitialiseCharacter(character_manager_.player_, sf::Vector2i(0, 0));
 	turn_manager_.character_turn_ = character_manager_.player_;
 	turn_manager_.StartTurn(character_manager_.player_);
+
+	info_window_->InitialisePlayer(character_manager_.player_);
 
 	for (auto& p : fs::directory_iterator("NPCs")) {
 		character_manager_.CreateNPCFromFile(p.path().string(), quest_manager_);
@@ -75,6 +79,10 @@ void MainScene::Release()
 
 bool MainScene::Update(float dt)
 {
+	if (info_window_->isAlive()) {
+		info_window_->Collsion();
+		return false;
+	}
 	Character* c = grid_->MovementAnimation(dt);
 	if (turn_manager_.character_turn_) {
 		if (!c) {
@@ -133,5 +141,9 @@ void MainScene::RenderUI()
 	//Render the end turn button.
 	if (turn_manager_.turn_ == TurnManager::Turn::Player) {
 		character_manager_.player_->RenderTurnButton();
+	}
+
+	if (info_window_->isAlive()) {
+		info_window_->Render();
 	}
 }

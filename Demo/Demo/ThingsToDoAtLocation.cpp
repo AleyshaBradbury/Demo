@@ -1,6 +1,7 @@
 #include "ThingsToDoAtLocation.h"
 #include "GeneralVariables.h"
 #include "Input.h"
+#include "LocationScene.h"
 
 ThingsToDoAtLocation::ThingsToDoAtLocation() :
 	GameObject(sf::Vector2f(298.0f, 50.0f), sf::Vector2f(0.0f, 0.0f), nullptr)
@@ -22,8 +23,11 @@ ThingsToDoAtLocation::ThingsToDoAtLocation() :
 bool ThingsToDoAtLocation::ButtonPressed()
 {
 	if (do_action_button_->Collision(GeneralVariables::window_.mapPixelToCoords(Input::GetMouse()))) {
-		Input::SetMouseLeftDown(false);
-		return DoAction();
+		bool action_complete = DoAction();
+		if (!action_complete) {
+			LocationScene::failed_action_timer_ = 1.5f;
+		}
+		return action_complete;
 	}
 	return false;
 }
