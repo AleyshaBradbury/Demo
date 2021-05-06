@@ -23,8 +23,10 @@ public:
 	//Which factions turn is the game on?
 	static Turn turn_;
 	//The enemy or npc integer.
-	static int turn_num_;
+	static int character_turn_num_;
 	static bool was_moveable_;
+
+	static int turn_num_;
 
 	static Character* character_turn_;
 	static CharacterManager* character_manager_;

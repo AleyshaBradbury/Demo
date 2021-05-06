@@ -26,5 +26,6 @@ private:
 	sf::Text npc_name_text_;
 	sf::Text npc_relationships_text_;
 	sf::Text npc_needs_text_;
+	sf::Text relationship_change_text_;
 };
 

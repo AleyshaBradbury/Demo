@@ -3,6 +3,7 @@
 
 MenuScene::MenuScene()
 {
+	//Initialise the start button.
 	sf::Vector2f button_size(200.0f, 70.0f);
 	to_main_button_ = new Button("Start", 
 		sf::Vector2f(GeneralVariables::window_.getSize().x / 2.0f - button_size.x / 2.0f,
@@ -12,6 +13,7 @@ MenuScene::MenuScene()
 
 bool MenuScene::Update(float dt)
 {
+	//If the start button is pressed then start the game.
 	if (Input::GetMouseLeftDown() &&
 		to_main_button_->Collision(GeneralVariables::window_.mapPixelToCoords(Input::GetMouse()))) {
 		Input::SetMouseLeftDown(false);

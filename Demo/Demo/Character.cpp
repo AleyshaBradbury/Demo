@@ -8,23 +8,25 @@ Character::Character(std::string name, int health, sf::Vector2f position,
 	GridObject(sf::Vector2f(Grid::grid_spacing_ / 5.0f * 4.0f,
 		Grid::grid_spacing_ / 5.0f * 4.0f) , position, texture)
 {
-	health_text_.setCharacterSize(30.0f);
+	//Setup the health text.
+	health_text_.setCharacterSize(30);
 	health_text_.setFillColor(sf::Color::White);
 	health_text_.setFont(GeneralVariables::font_);
 	health_text_.setOutlineColor(sf::Color::Black);
 	health_text_.setOutlineThickness(2.0f);
 
-	ResetHealth();
-
 	max_health_ = health;
+	//Set health to be the max health.
 	ResetHealth();
 	name_ = name;
+	//Characters cannot stand on top of other characters.
 	overlap_ = false;
 	character_manager_ = character_manager;
 	max_movement_actions_ = num_movement;
 	max_actions_ = num_attacks;
 	attack_strength_ = attack_strength;
 
+	//Initialise the icons which show what stats the character has.
 	movement_icon_ = new Icon(sf::Vector2f(5.0f, 5.0f), sf::Vector2f(40.0f, 50.0f));
 	movement_icon_->setFillColor(sf::Color::Blue);
 	actions_icon_ = new Icon(sf::Vector2f(55.0f, 5.0f), sf::Vector2f(40.0f, 50.0f));
@@ -35,6 +37,7 @@ Character::Character(std::string name, int health, sf::Vector2f position,
 
 	setOrigin(getSize() / 2.0f);
 
+	//Set movement and normal actions to their maximums.
 	ResetActions();
 }
 
@@ -51,8 +54,9 @@ void Character::ResetHealth()
 
 bool Character::SubtractHealth(int health)
 {
+	//Remove health from a character then check if that character is dead.
 	health_ -= health;
-	health = (int)fminf(health, max_health_);
+	health = (int)fminf((float)health, (float)max_health_);
 	SetHealthText();
 	if (health_ <= 0) {
 		return true;
@@ -102,6 +106,7 @@ void Character::InvertMoveable()
 
 bool Character::SpendMovement()
 {
+	//If there is a movement point, allow the character to move.
 	if (num_movement_actions_ > 0) {
 		num_movement_actions_--;
 		movement_icon_->SetText(std::to_string(num_movement_actions_));
@@ -112,6 +117,7 @@ bool Character::SpendMovement()
 
 bool Character::SpendAction()
 {
+	//If there is an action point, allow the character to complete their action.
 	if (num_actions_ > 0) {
 		num_actions_--;
 		actions_icon_->SetText(std::to_string(num_actions_));
@@ -154,6 +160,10 @@ std::string Character::GetName()
 void Character::ChangeMaxHealth(int diff)
 {
 	max_health_ += diff;
+	if (health_ > max_health_) {
+		health_ = max_health_;
+		SetHealthText();
+	}
 }
 
 void Character::ChangeMovementActions(int diff)
@@ -189,13 +199,16 @@ uint32_t Character::GetAttackStrength()
 
 float Character::GetDistanceFromCharacter(Character* character)
 {
+	//Get the distance between this character and another.
 	sf::Vector2i position1 = GetGridNode()->GetGridPosition();
 	sf::Vector2i position2 = character->GetGridNode()->GetGridPosition();
-	return sqrtf(powf(position1.x - position2.x, 2.0f) + powf(position1.y - position2.y, 2.0f));
+	return sqrtf(powf((float)position1.x - (float)position2.x, 2.0f) + 
+		powf((float)position1.y - (float)position2.y, 2.0f));
 }
 
 void Character::MoveObject(sf::Vector2f position)
 {
+	//Move all parts of the character as one.
 	setPosition(position);
 	health_text_.setPosition(position - sf::Vector2f(9.0f, 20.0f));
 }

@@ -17,13 +17,14 @@ public:
 
 	bool isAlive();
 	void SetAlive(bool a);
-	void ShowWindow(bool reward);
+	void ShowWindow(bool reward, int num);
+	void SetStats();
 
 private:
 	struct StatChanges {
 		bool alive = true;
 		sf::Text stat_text_;
-		Button* button_;
+		Button* button_ = nullptr;
 	};
 	void InitialiseStatChanges();
 	StatChanges InitialiseStatChangesDetails(float positionY, StatChanges stat);
@@ -37,5 +38,7 @@ private:
 
 	sf::Vector2f window_size_ = sf::Vector2f(450.0f, 350.0f);
 	sf::Vector2f button_size_ = sf::Vector2f(80.0f, 40.0f);
+
+	int num_ = 0;
 };
 

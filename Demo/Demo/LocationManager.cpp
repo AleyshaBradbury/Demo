@@ -18,7 +18,6 @@ void LocationManager::DeleteAllQuestLocations()
 	while (Quest_Locations_.size() > 0) {
 
 		delete Quest_Locations_.back();
-		Quest_Locations_.back() = nullptr;
 		Quest_Locations_.pop_back();
 	}
 }
@@ -26,6 +25,8 @@ void LocationManager::DeleteAllQuestLocations()
 void LocationManager::CreateQuestLocations(Grid* grid, const CharacterManager* character_manager_, 
 	QuestManager* quest_manager)
 {
+	//Create quest locations for every npc and then make them accessible from all 
+	//the nodes that neighbour the npc.
 	for (auto npc : character_manager_->Npcs_) {
 		Quest_Locations_.push_back(new QuestLocation(npc, npc->GetGridNode(), nullptr, quest_manager));
 		for (int i = 0; i < 4; i++) {

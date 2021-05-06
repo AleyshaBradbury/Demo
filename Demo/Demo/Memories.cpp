@@ -3,6 +3,7 @@
 
 void Memories::AddMemory(std::vector<std::string> what_happened, Node* where_it_happened)
 {
+	//Add a memory to the character based on their actions.
 	Memory memory;
 	memory.where_it_happened_ = where_it_happened;
 	memory.what_happened_ = what_happened;
@@ -13,6 +14,7 @@ void Memories::AddMemory(std::vector<std::string> what_happened, Node* where_it_
 
 void Memories::ForgetMemories()
 {
+	//Forget old memeories.
 	for (int i = 0; i < Memories_.size(); i++) {
 		Memories_[i].turns_ago_++;
 		if (Memories_[i].turns_ago_ > Memories_[i].turns_total_) {

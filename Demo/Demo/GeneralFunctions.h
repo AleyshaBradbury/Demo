@@ -4,6 +4,10 @@
 
 using namespace std;
 
+/*Most of these functions are not relevant to this program.
+This is a class which I transfer between programs and collect reasonably useful
+functions that can be used in other places.*/
+
 class GeneralFunctions
 {
 public:

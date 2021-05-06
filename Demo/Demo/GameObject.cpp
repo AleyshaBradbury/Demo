@@ -21,6 +21,7 @@ void GameObject::AddChild(GameObject* object)
 
 void GameObject::MoveObjectAndChildrenToPosition(sf::Vector2f new_position)
 {
+	//Move this and any object connected to it together.
 	for (auto child : Children_) {
 		child->setPosition(new_position - (getPosition() - child->getPosition()));
 	}

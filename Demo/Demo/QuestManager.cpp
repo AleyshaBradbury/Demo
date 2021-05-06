@@ -1,6 +1,7 @@
 #include "QuestManager.h"
 #include "CharacterManager.h"
 #include "ResourceManager.h"
+#include "SaveData.h"
 
 QuestManager::QuestManager(CharacterManager* character_manager)
 {
@@ -13,7 +14,7 @@ void QuestManager::GenerateQuests(NPC* npc)
     uint32_t weight = npc->GetRelationshipWithCharacter("Player") == 0 ? 1 : npc->GetRelationshipWithCharacter("Player");
     if (GetNPCsQuests(npc).size() < (uint32_t)std::ceil(weight / 3)) {
         //Determine what and how many resources should be in the quest.
-        std::vector<std::string> Resources = DetermineResources();
+        std::vector<std::string> Resources = DetermineResources(npc);
         std::vector<Quest::QuestDetails> Quest_Details;
         //Create the quest details.
         for (int i = 0; i < Resources.size(); i++) {
@@ -31,6 +32,7 @@ void QuestManager::GenerateQuests(NPC* npc)
             Quest* quest = new Quest("I need " + Quest_Details[0].resource_ + "!",
                 Quest_Details);
             AddQuest(npc, quest);
+            SaveData::SaveNewQuestData(quest, npc);
         }
     }
 }
@@ -55,12 +57,12 @@ void QuestManager::DeleteQuest(Quest* quest, NPC* npc)
     Quests_[npc] = npc_quests;
 }
 
-std::vector<std::string> QuestManager::DetermineResources()
+std::vector<std::string> QuestManager::DetermineResources(NPC* npc)
 {
     std::vector<std::string> resource;
 
     //Determine what needs will be added to the quest.
-    std::unordered_map<std::string, uint32_t> Needs;
+    std::unordered_map<std::string, uint32_t> Needs = npc->GetAllNeeds();
     for (auto& need : Needs) {
         int random = rand() % (10 - need.second);
         if (random == 0) {
@@ -70,7 +72,7 @@ std::vector<std::string> QuestManager::DetermineResources()
 
     //Determine from previous memories of the player, what resource will be added to the quest.
     std::vector<Memories::Memory> Memories = character_manager_->player_->GetMemories();
-    for (int i = Memories.size() - 1; i >= 0; i--) {
+    for (int i = (int)Memories.size() - 1; i >= 0; i--) {
         int random = rand() % 2;
         if (Memories[i].what_happened_[0] == "Task" && random == 0) {
             resource.push_back(Memories[i].what_happened_[1]);
@@ -104,6 +106,6 @@ unsigned int QuestManager::GetQuestAmount(NPC* npc)
 {
     //Determine how much of an item the npc will ask for depending on their relationship with the player.
     int amount = npc->GetRelationshipWithCharacter("Player") - 9;
-    amount = std::ceil(abs(amount) / 3);
+    amount = (int)std::ceil(abs(amount) / 3);
     return rand() % 3 + amount;
 }

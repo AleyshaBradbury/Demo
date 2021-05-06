@@ -10,7 +10,7 @@ InfoWindow::InfoWindow()
 	setSize(window_size_);
 	setOrigin(window_size_ / 2.0f);
 	setPosition(middle_position);
-	setFillColor(sf::Color(200.0f, 200.0f, 200.0f, 255.0f));
+	setFillColor(sf::Color(200, 200, 200, 255));
 
 	sf::Vector2f button_size(100.0f, 50.0f);
 	//Position = bottom left of info window - button size - a bit more for neatness.
@@ -31,13 +31,18 @@ void InfoWindow::Collsion()
 {
 	if (Input::GetMouseLeftDown()) {
 		sf::Vector2f mousePosition = GeneralVariables::window_.mapPixelToCoords(Input::GetMouse());
+		//If the skip button is pressed, remove/add 1 health to the player.
 		if (skip_button_->Collision(mousePosition)) {
 			player_->SubtractHealth(reward_ ? -1 : 1);
 			player_->CheckDead();
-			alive_ = false;
+			num_--;
+			if (num_ <= 0) {
+				alive_ = false;
+			}
 			Input::SetMouseLeftDown(false);
 			return;
 		}
+		//Check if any of the stat change buttons are pressed.
 		Input::SetMouseLeftDown(!HandleStatChange(mousePosition));
 	}
 }
@@ -68,11 +73,17 @@ void InfoWindow::SetAlive(bool a)
 	alive_ = a;
 }
 
-void InfoWindow::ShowWindow(bool reward)
+void InfoWindow::ShowWindow(bool reward, int num)
 {
 	alive_ = true;
 	reward_ = reward;
+	num_ = num;
 
+	SetStats();
+}
+
+void InfoWindow::SetStats()
+{
 	if (reward_) {
 		Stat_Changes_[0].alive = player_->GetMaxHealth() < 10;
 		Stat_Changes_[1].alive = player_->GetMovement() < 8;
@@ -145,29 +156,60 @@ InfoWindow::StatChanges InfoWindow::InitialiseStatChangesDetails(float positionY
 
 bool InfoWindow::HandleStatChange(sf::Vector2f mouse_position)
 {
+	//If a stat change button is pressed then change that stat and close the window.
 	if (Stat_Changes_[0].alive && Stat_Changes_[0].button_->Collision(mouse_position)) {
 		player_->ChangeMaxHealth(reward_ ? 1 : -1);
-		alive_ = false; 
+		num_--;
+		if (num_ <= 0) {
+			alive_ = false;
+		}
+		else {
+			SetStats();
+		}
 		return true;
 	}
 	else if (Stat_Changes_[1].alive && Stat_Changes_[1].button_->Collision(mouse_position)) {
 		player_->ChangeMovement(reward_ ? 1 : -1);
-		alive_ = false;
+		num_--;
+		if (num_ <= 0) {
+			alive_ = false;
+		}
+		else {
+			SetStats();
+		}
 		return true;
 	}
 	else if (Stat_Changes_[2].alive && Stat_Changes_[2].button_->Collision(mouse_position)) {
 		player_->ChangeMovementActions(reward_ ? 1 : -1);
-		alive_ = false;
+		num_--;
+		if (num_ <= 0) {
+			alive_ = false;
+		}
+		else {
+			SetStats();
+		}
 		return true;
 	}
 	else if (Stat_Changes_[3].alive && Stat_Changes_[3].button_->Collision(mouse_position)) {
 		player_->ChangeActions(reward_ ? 1 : -1);
-		alive_ = false;
+		num_--;
+		if (num_ <= 0) {
+			alive_ = false;
+		}
+		else {
+			SetStats();
+		}
 		return true;
 	}
 	else if (Stat_Changes_[4].alive && Stat_Changes_[4].button_->Collision(mouse_position)) {
-		player_->ChangeMaxHealth(reward_ ? 1 : -1);
-		alive_ = false;
+		player_->ChangeAttackStrength(reward_ ? 1 : -1);
+		num_--;
+		if (num_ <= 0) {
+			alive_ = false;
+		}
+		else {
+			SetStats();
+		}
 		return true;
 	}
 	return false;

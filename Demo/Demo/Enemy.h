@@ -7,7 +7,7 @@ class Enemy : public Character
 public:
 	Enemy(int health, sf::Vector2f position, sf::Texture* texture, 
 		CharacterManager* character_manager, int movements, int attacks, 
-		std::string name, std::string drop);
+		std::string name, std::string drop, int movement, int attack_strength);
 	~Enemy();
 
 	void DoAction(float dt, Grid* grid);

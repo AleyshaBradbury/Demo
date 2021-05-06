@@ -162,6 +162,9 @@
     <ClCompile Include="Icon.cpp">
       <Filter>Source Files\Sprites</Filter>
     </ClCompile>
+    <ClCompile Include="SaveData.cpp">
+      <Filter>Source Files\GameMechanics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h">
@@ -265,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="Icon.h">
       <Filter>Header Files\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveData.h">
+      <Filter>Header Files\GameMechanics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

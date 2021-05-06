@@ -146,7 +146,7 @@ std::vector<Node*> Pathfinding::Pathfind(Node* start_node, Node* end_node, std::
 				if (currentG < gScore[neighbour] && currentG <= max_distance) {
 					Previous_Node[neighbour] = current;
 					//If there is not already an entry for that node then create it and set it.
-					gScore[neighbour] = h(neighbour->GetGridPosition(), end);
+					gScore[neighbour] = (float)h(neighbour->GetGridPosition(), end);
 					//If the fScore for that node already exists then set it to it,
 					//otherwise create it and then set it.
 					fScore[neighbour] =

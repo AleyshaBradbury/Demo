@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <ctime>
 #include <stdlib.h> 
+#include <fstream>
 #include <time.h>
 #include <stdio.h>
 #include "Input.h"
@@ -17,6 +18,7 @@
 #include "StatsAndInventoryScene.h"
 
 #include "InfoWindow.h"
+#include "SaveData.h"
 
 //
 //Declaring Static Members
@@ -37,10 +39,11 @@ sf::View Grid::grid_view_;
 
 //Turn Manager static members.
 TurnManager::Turn TurnManager::turn_ = TurnManager::Turn::Player;
-int TurnManager::turn_num_ = 0;
+int TurnManager::character_turn_num_ = 0;
 Character* TurnManager::character_turn_ = nullptr;
 CharacterManager* TurnManager::character_manager_ = nullptr;
 bool TurnManager::was_moveable_ = false;
+int TurnManager::turn_num_ = 0;
 
 //General Variables static members.
 sf::Vector2u window_size_(800, 800);
@@ -53,6 +56,9 @@ std::unordered_map<std::string, unsigned int> ResourceManager::resources;
 //Location Scene static members.
 float LocationScene::failed_action_timer_ = 0.0f;
 
+//Save Data static members.
+std::ofstream SaveData::file;
+
 int main() {
 
 	srand((int)time(NULL));
@@ -63,9 +69,12 @@ int main() {
 	//Initialise Input.
 	Input::Init();
 
-	
+	//Load font in from file.
 	GeneralVariables::font_.loadFromFile("fonts/consola.ttf");
 
+	SaveData::file.open("important_data/important_data.csv");
+
+	//Initialise the info window.
 	InfoWindow info_window_;
 
 	//Initialise Scene Objects.

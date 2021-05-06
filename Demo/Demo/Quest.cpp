@@ -10,6 +10,7 @@ Quest::Quest(std::string quest_name, std::vector<QuestDetails> Quest_Requirement
 
 	setSize(getSize() + sf::Vector2f(0.0f, 22.0f * Quest_Requirements_.size() - 1));
 
+	//Setup all the quest text.
 	title_.setString(quest_name);
 	std::string details;
 	for (auto requirement : Quest_Requirements_) {
@@ -46,6 +47,7 @@ void Quest::RenderExtra()
 
 bool Quest::DeleteButtonPressed()
 {
+	//If refuse button is pressed, delete the quest.
 	if (refuse_button_->Collision(GeneralVariables::window_.mapPixelToCoords(Input::GetMouse()))) {
 		return true;
 	}

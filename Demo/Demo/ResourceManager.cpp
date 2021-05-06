@@ -23,6 +23,7 @@ bool ResourceManager::AddResource(std::string resource_name, int resource_amount
 
 bool ResourceManager::CanAddResource(std::string resource_name, int resource_amount)
 {
+	//If the resource already exists then see if the amount can be added.
 	if (resources.find(resource_name) != resources.end()) {
 		int new_amount = resources[resource_name] + resource_amount;
 		if (new_amount >= 0) {

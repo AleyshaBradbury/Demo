@@ -14,6 +14,7 @@ Grid::Grid(LocationManager* location_manager)
 	location_manager_ = location_manager;
 	location_texture_.loadFromFile("gfx/exclamationMark.png");
 
+	//Load grid textures from file.
 	Main_Textures_.push_back(LoadTexture("gfx/grassyPlane.png"));
 	Main_Textures_.push_back(LoadTexture("gfx/sandyPlane.png"));
 	Main_Textures_.push_back(LoadTexture("gfx/stonePlane.png"));
@@ -35,6 +36,7 @@ bool Grid::InitialiseCharacter(Character* character, sf::Vector2i node_position)
 
 bool Grid::InitialiseCharacter(Character* character, Node* node)
 {
+	//Set the character on the tile and find their movement area.
 	if (!node->GetCharacterOnTile()) {
 		SetCharacterPositionOnGrid(character, node);
 		pathfinding_.FindAvailableNodes(character, Nodes_);
@@ -45,6 +47,7 @@ bool Grid::InitialiseCharacter(Character* character, Node* node)
 
 bool Grid::MoveCharacter(Character* character, Node* node)
 {
+	//If the player can move to that node, pathfind to there.
 	if (character && node && !node->GetCharacterOnTile() &&
 		std::find(character->Moveable_Nodes_.begin(), character->Moveable_Nodes_.end(),
 		node) != character->Moveable_Nodes_.end()) {
@@ -67,6 +70,7 @@ void Grid::MoveCharacterTowardsTarget(Character* character, GridObject* target)
 	//Find the path between the two points. max_distance == 1000 because its irrelevant.
 	std::vector<Node*> Path = pathfinding_.Pathfind(character->GetGridNode(),
 		target->GetGridNode(), Nodes_, 1000);
+	//The enemy cannot stand on top of the npc/player so make sure they are not going to.
 	if (Path.size() > 0) {
 		Node* node_position = nullptr;
 		do {
@@ -83,7 +87,7 @@ void Grid::MoveCharacterTowardsTarget(Character* character, GridObject* target)
 
 Character* Grid::MovementAnimation(float dt)
 {
-	//If there is a character which should be moving.
+	//If there is a character which should be moving then animate them moving.
 	if (moving_character_) {
 		if (movement_nodes_.size() > 0) {
 			movement_timer_ += dt;
@@ -98,7 +102,7 @@ Character* Grid::MovementAnimation(float dt)
 			}
 		}
 		else {
-			//Move the character.
+			//Set the character on their final node and stop their movement.
 			SetCharacterPositionOnGrid(moving_character_, previous_movement_node_);
 			pathfinding_.FindAvailableNodes(moving_character_, Nodes_);
 			std::vector<std::string> memory;
@@ -113,6 +117,7 @@ Character* Grid::MovementAnimation(float dt)
 
 Node* Grid::GridCollision(sf::Vector2f mouse_position)
 {
+	//If a node is clicked on then resolve that click.
 	for (int i = 0; i < Nodes_.size(); i++) {
 		if (Nodes_[i]->Collision(mouse_position)) {
 			return Nodes_[i];
@@ -124,7 +129,7 @@ Node* Grid::GridCollision(sf::Vector2f mouse_position)
 void Grid::CreateMap(std::string file_name)
 {
 	//
-	//Reading the map from file.
+	//Reading the map from file and building it.
 	//
 
 	std::fstream file;
@@ -186,6 +191,7 @@ void Grid::AddLocation(Node* node, Location* location)
 
 bool Grid::CheckIfLocation(Node* current_node)
 {
+	//If there is a location on that node then enter it.
 	Location* location = current_node->GetLocation();
 	if (location) {
 		SceneManager::ChangeScene(SceneManager::Scene::Location);
@@ -197,6 +203,7 @@ bool Grid::CheckIfLocation(Node* current_node)
 
 bool Grid::CheckIfInRange(Node* node1, Node* node2, int max_distance)
 {
+	//Check if the two nodes are in range of each other.
 	int distanceX = abs(node1->GetGridPosition().x - node2->GetGridPosition().x);
 	int distanceY = abs(node1->GetGridPosition().y - node2->GetGridPosition().y);
 
@@ -230,12 +237,17 @@ Character* Grid::FindClosestTarget(Character* character)
 
 Node* Grid::GetNodeAtPositionOrClosest(const sf::Vector2i node_position)
 {
+	//Get the exact node inputted or the closest node available if it doesnt exist.
 	Node* closest_node = Nodes_[0];
-	int distance = sqrtf(pow(node_position.x - Nodes_[0]->GetGridPosition().x, 2) +
-		pow(node_position.y - Nodes_[0]->GetGridPosition().y, 2));
+	int distance = (int)sqrtf(
+		pow(float(node_position.x - Nodes_[0]->GetGridPosition().x), 2.0f) +
+		pow(float(node_position.y - Nodes_[0]->GetGridPosition().y), 2.0f)
+	);
 	for (int i = 1; i < Nodes_.size(); i++) {
-		int new_distance = sqrtf(pow(node_position.x - Nodes_[i]->GetGridPosition().x, 2) +
-			pow(node_position.y - Nodes_[i]->GetGridPosition().y, 2));
+		int new_distance = (int)sqrtf(
+			pow(float(node_position.x - Nodes_[i]->GetGridPosition().x), 2.0f) +
+			pow(float(node_position.y - Nodes_[i]->GetGridPosition().y), 2.0f)
+		);
 		if (new_distance < distance) {
 			closest_node = Nodes_[i];
 			if (new_distance == 0) {
@@ -288,6 +300,7 @@ void Grid::SetGridObjectPositionOnGrid(GridObject* game_object, sf::Vector2i pos
 
 void Grid::SetGridObjectPositionOnGrid(GridObject* game_object, Node* target_node)
 {
+	//If the node exists then set the grid object on it.
 	if (target_node) {
 		game_object->setPosition(sf::Vector2f(
 			target_node->GetGridPosition().x * grid_spacing_ + grid_spacing_ / 2.0f,
@@ -305,9 +318,11 @@ void Grid::SetCharacterPositionOnGrid(Character* character, sf::Vector2i positio
 
 void Grid::SetCharacterPositionOnGrid(Character* character, Node* target_node)
 {
+	//Remove the character from their old node.
 	if (character->GetGridNode()) {
 		character->GetGridNode()->SetCharacterOnTile(nullptr);
 	}
+	//Set the character on the new node.
 	if (target_node) {
 		character->SetGridNode(target_node);
 		target_node->SetCharacterOnTile(character);

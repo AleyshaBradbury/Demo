@@ -12,6 +12,7 @@ Player::Player(int health, sf::Vector2f position, sf::Texture* texture,
 {
 	info_window_ = info_window;
 
+	//Initialise all buttons.
 	sf::Vector2f button_size(105.0f, 35.0f);
 	turn_button_ = new Button("End Turn",
 		sf::Vector2f(GeneralVariables::window_.getSize().x - button_size.x - 10.0f, 10.0f),
@@ -43,10 +44,10 @@ void Player::DoAction(float dt, Grid* grid)
 			ResetActions();
 			TurnManager::DetermineCharacterTurn();
 		}
-		else if (DEBUG_skip_to_start_of_players_turn_->Collision(GeneralVariables::window_.mapPixelToCoords(Input::GetMouse()))) {
-			ResetActions();
-			TurnManager::DEBUGSkipToStartOfPlayerTurn();
-		}
+		//else if (DEBUG_skip_to_start_of_players_turn_->Collision(GeneralVariables::window_.mapPixelToCoords(Input::GetMouse()))) {
+		//	ResetActions();
+		//	TurnManager::DEBUGSkipToStartOfPlayerTurn();
+		//}
 		else if (node) {
 			CheckIfSpaceEmptyAndResolve(node, grid);
 		}
@@ -74,19 +75,20 @@ void Player::RenderTurnButton()
 		turn_button_->RenderButtonText();
 	}
 	//DEBUG: skip to the start of the next player turn. 
-	if (DEBUG_skip_to_start_of_players_turn_) {
-		GeneralVariables::window_.draw(*DEBUG_skip_to_start_of_players_turn_);
-		DEBUG_skip_to_start_of_players_turn_->RenderButtonText();
-	}
+	//if (DEBUG_skip_to_start_of_players_turn_) {
+	//	GeneralVariables::window_.draw(*DEBUG_skip_to_start_of_players_turn_);
+	//	DEBUG_skip_to_start_of_players_turn_->RenderButtonText();
+	//}
 }
 
-void Player::SetInfoWindow(bool reward)
+void Player::SetInfoWindow(bool reward, int num)
 {
-	info_window_->ShowWindow(reward);
+	info_window_->ShowWindow(reward, num);
 }
 
 void Player::CheckDead()
 {
+	//if the player is dead then delete them.
 	if (GetHealth() <= 0) {
 		character_manager_->DeleteDeadGoodCharacter("Player");
 	}
@@ -149,7 +151,6 @@ void Player::RelationshipChangeWhenEnemyDies()
 	for (auto& npc : character_manager_->Npcs_) {
 		if (GetDistanceFromCharacter(npc) < 4 && rand() % 3 == 0) {
 			npc->ChangeRelationshipWithCharacter("Player", 1);
-			npc->rescued_time_ = 3;
 		}
 	}
 }

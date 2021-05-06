@@ -17,6 +17,7 @@ public:
 	NPC* FindNPCByName(std::string name);
 	//A vector of enemies that are alive.
 	std::vector<Enemy*> Enemies_;
+	const uint32_t max_enemies_ = 4;
 	void LoadEnemyTypesFromFile(std::string file_name);
 	
 	void RenderAll();
@@ -32,6 +33,7 @@ public:
 	std::string GetEnemyDropByEnemyName(std::string enemy_name);
 
 	void CreateRelationship(NPC* npc, std::string other_character);
+	void DeleteDeadNPCsRelationships(std::string npcs_name);
 	void ChangeRelationshipsAfterQuest(NPC* npc);
 
 
@@ -44,13 +46,14 @@ private:
 	bool spawned_before_ = false;
 
 	struct EnemyType {
-		std::string name_;
-		std::string drop_;
-		unsigned int max_health_;
-		unsigned int movement_;
-		unsigned int attack_;
-		unsigned int attack_strength_;
-		std::string texture_location_;
+		std::string name_ = "";
+		std::string drop_ = "";
+		unsigned int max_health_ = 0;
+		unsigned int movement_ = 0;
+		unsigned int movement_actions_ = 0;
+		unsigned int attack_ = 0;
+		unsigned int attack_strength_ = 0;
+		std::string texture_location_ = "";
 	};
 	std::vector<EnemyType> Enemy_Types_;
 };

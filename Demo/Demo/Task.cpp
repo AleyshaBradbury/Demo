@@ -15,6 +15,7 @@ Task::Task(std::string task_name, std::string thing_collected, unsigned int thin
 	
 	title_.setString(task_name_);
 
+	//Set the tasks text up by adding all of the task requirements/rewards into a string.
 	int lines = 1;
 	std::string other_text_string = "Gain " + std::to_string(thing_per_task) + " " + thing_collected + ".";
 	if (task_details_.thing_required_.size() > 0) {
@@ -38,6 +39,7 @@ std::string Task::GetTaskName()
 
 bool Task::DoAction()
 {
+	//If the task is completeable then gain/lose resources.
 	if (IsCompleteable()) {
 		for (int i = 0; i < task_details_.thing_required_.size(); i++) {
 			ResourceManager::AddResource(task_details_.thing_required_[i], 
@@ -60,6 +62,7 @@ std::string Task::GetThingCollected()
 
 bool Task::IsCompleteable()
 {
+	//If all of the required resources are in the inventory then return true.
 	if (task_details_.thing_required_.size() == 0) {
 		return true;
 	}

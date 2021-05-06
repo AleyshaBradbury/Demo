@@ -14,7 +14,7 @@ public:
 	void DeleteQuest(Quest* quest, NPC* npc);
 
 private:
-	std::vector<std::string> DetermineResources();
+	std::vector<std::string> DetermineResources(NPC* npc);
 	void AddQuest(NPC* npc, Quest* quest);
 	unsigned int GetQuestAmount(NPC* npc);
 	std::unordered_map<NPC*, std::vector<Quest*>> Quests_;

@@ -5,6 +5,7 @@
 
 void TurnManager::StartTurn(Character* character)
 {
+	//If the characters moveable was set to false then retain that for the end of the turn.
 	was_moveable_ = character->GetMoveable();
 	character->SetMoveable(true);
 	Grid::grid_view_.setCenter(character->getPosition());
@@ -12,6 +13,7 @@ void TurnManager::StartTurn(Character* character)
 
 void TurnManager::EndTurn(Character* character)
 {
+	//Return the bool for the characters moveable area to what it was when they started their turn.
 	character->SetMoveable(was_moveable_);
 }
 
@@ -22,55 +24,51 @@ void TurnManager::DetermineCharacterTurn()
 		EndTurn(character_turn_);
 		character_turn_ = nullptr;
 	}
-	turn_num_++;
+	character_turn_num_++;
 	switch (turn_) {
 	case Turn::Player:
 		/*If the player just finished their turn, check if there are any NPCs. If there
-		is then set the first NPC to have their turn. If there is no NPCs but at least
-		one enemy, set the first Enemy to have their turn.*/
+		is then set the first NPC to have their turn. If there is no NPCs, set turn
+		to enemys turn.*/
 		if (character_manager_->Npcs_.size() > 0) {
 			turn_ = Turn::NPC;
 			character_turn_ = character_manager_->Npcs_[0];
-			turn_num_ = 0;
+			character_turn_num_ = 0;
 			break;
 		}
 		turn_ = Turn::Enemy;
-		turn_num_ = 0;
+		character_turn_num_ = 0;
+		//If there are any enemys, set it to their turn.
 		if (character_manager_->Enemies_.size() > 0) {
 			character_turn_ = character_manager_->Enemies_[0];
 			break;
 		}
 		return;
 	case Turn::NPC:
-		/*If all of the NPCs have had their turn: 
-		- if there are any enemies, set the first enemy to have their turn
-		- otherwise have the player set to have their turn.
-		else have the next npc have their turn.*/
-		if (turn_num_ >= character_manager_->Npcs_.size()) {
+		/*If all of the NPCs have had their turn set the enemies to have their turn.*/
+		if (character_turn_num_ >= character_manager_->Npcs_.size()) {
 			turn_ = Turn::Enemy;
-			turn_num_ = 0;
+			character_turn_num_ = 0;
 			if (character_manager_->Enemies_.size() > 0) {
 				character_turn_ = character_manager_->Enemies_[0];
 			}
-			else {
-
-				return;
-			}
 		}
 		else {
-			character_turn_ = character_manager_->Npcs_[turn_num_];
+			character_turn_ = character_manager_->Npcs_[character_turn_num_];
 		}
 		break;
 	case Turn::Enemy:
-		/*If all of the enemies have had their turn then set the player to have their 
-		turn, else set the next enemy to have their turn.*/
-		if (turn_num_ >= character_manager_->Enemies_.size()) {
+		/*If all of the enemies have had their turn spawn more enemies
+		then set the player to have their turn, else set the next enemy to have 
+		their turn.*/
+		if (character_turn_num_ >= character_manager_->Enemies_.size()) {
 			character_manager_->SpawnEnemies();
 			turn_ = Turn::Player;
+			turn_num_++;
 			character_turn_ = character_manager_->player_;
 		}
 		else {
-			character_turn_ = character_manager_->Enemies_[turn_num_];
+			character_turn_ = character_manager_->Enemies_[character_turn_num_];
 		}
 	}
 	//Start the determined characters turn.

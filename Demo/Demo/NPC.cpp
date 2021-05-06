@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include "Grid.h"
+#include "SaveData.h"
 
 NPC::NPC(std::string name, int health, sf::Vector2f position, 
 	sf::Texture* texture, CharacterManager* character_manager,
@@ -23,11 +24,14 @@ NPC::~NPC()
 
 void NPC::DoAction(float dt, Grid* grid)
 {
-	quest_manager_->GenerateQuests(this);
-	TurnManager::DetermineCharacterTurn();
-	if (rescued_time_ > 0) {
-		rescued_time_--;
+	heal = !heal;
+	if (heal) {
+		SubtractHealth(-1);
 	}
+	//Generate quests then end the npc's turn.
+	quest_manager_->GenerateQuests(this);
+	SaveData::SaveRelationshipChanges(this);
+	TurnManager::DetermineCharacterTurn();
 }
 
 void NPC::IncrementNeeds()
@@ -52,6 +56,13 @@ void NPC::AddCompletedQuest(Quest* quest)
 {
 	completed_quests_.push_back(quest);
 	character_manager_->ChangeRelationshipsAfterQuest(this);
+	for (auto& quest_req : quest->GetRequirements()) {
+		std::unordered_map<std::string, uint32_t>::iterator it =
+			Needs_.find(quest_req.resource_);
+		if (it != Needs_.end()) {
+			(*it).second = 0;
+		}
+	}
 }
 
 std::vector<Quest*> NPC::GetCompletedQuests()
@@ -66,6 +77,14 @@ void NPC::AddRelationshipWithCharacter(std::string character_name, unsigned int 
 	}
 }
 
+void NPC::DeleteRelationshipWithCharacter(std::string character_name)
+{
+	std::unordered_map<std::string, uint32_t>::iterator it = Relationship_.find(character_name);
+	if (it != Relationship_.end()) {
+		Relationship_.erase(it);
+	}
+}
+
 unsigned int NPC::GetRelationshipWithCharacter(std::string character_name)
 {
 	return Relationship_[character_name];
@@ -75,7 +94,10 @@ void NPC::ChangeRelationshipWithCharacter(std::string character_name, int change
 {
 	if (Relationship_.find(character_name) != Relationship_.end()) {
 		Relationship_[character_name] = 
-			(uint32_t)fminf(fmaxf(Relationship_[character_name] + change, 0), 9);
+			(uint32_t)fminf(fmaxf(float(Relationship_[character_name] + change), 0.0f), 9.0f);
+		if (character_name == "Player") {
+			relationship_change_ += change;
+		}
 	}
 }
 

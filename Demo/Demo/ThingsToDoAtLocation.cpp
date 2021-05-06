@@ -22,6 +22,8 @@ ThingsToDoAtLocation::ThingsToDoAtLocation() :
 
 bool ThingsToDoAtLocation::ButtonPressed()
 {
+	//Check if a button is pressed and if that action can be done. If not then set a 
+	//failure text to show up.
 	if (do_action_button_->Collision(GeneralVariables::window_.mapPixelToCoords(Input::GetMouse()))) {
 		bool action_complete = DoAction();
 		if (!action_complete) {

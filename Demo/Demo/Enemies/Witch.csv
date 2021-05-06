@@ -1,7 +1,7 @@
-name,Goblin
-drop,club
-max health,1
-movement,2
+name,Witch
+drop,dust
+max health,3
+movement,3
 movement actions,1
 attack,1
 attack strength,2

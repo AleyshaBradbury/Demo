@@ -1,6 +1,7 @@
 #include "QuestLocation.h"
 #include "Input.h"
 #include "Player.h"
+#include "SaveData.h"
 
 QuestLocation::QuestLocation(NPC* npc, Node* node, sf::Texture* texture, 
 	QuestManager* quest_manager) :
@@ -30,13 +31,14 @@ QuestLocation::QuestLocation(NPC* npc, Node* node, sf::Texture* texture,
 	npc_needs_text_.setCharacterSize(30);
 	npc_needs_text_.setFillColor(sf::Color::White);
 	npc_needs_text_.setFont(GeneralVariables::font_);
+
+	relationship_change_text_.setCharacterSize(30);
+	relationship_change_text_.setFillColor(sf::Color::White);
+	relationship_change_text_.setFont(GeneralVariables::font_);
 }
 
 QuestLocation::~QuestLocation()
 {
-	if (npc_) {
-		npc_->GetGridNode()->SetLocation(nullptr);
-	}
 }
 
 void QuestLocation::RenderLocation()
@@ -53,10 +55,12 @@ void QuestLocation::RenderLocation()
 	GeneralVariables::window_.draw(npc_name_text_);
 	GeneralVariables::window_.draw(npc_relationships_text_);
 	GeneralVariables::window_.draw(npc_needs_text_);
+	GeneralVariables::window_.draw(relationship_change_text_);
 }
 
 void QuestLocation::SetUpLocation()
 {
+	//Set up the quests so they are all visible on the screen.
 	Quest_ = quest_manager_->GetNPCsQuests(npc_);
 	float positionY = 5.0f;
 	if (Quest_.size() > 0) {
@@ -64,16 +68,47 @@ void QuestLocation::SetUpLocation()
 		for (int i = 0; i < Quest_.size(); i++) {
 			Quest_[i]->SetUpPositionOnScreen(sf::Vector2f(left_size_start_, positionY));
 			Quest_[i]->SetButtonPosition(sf::Vector2f(left_size_start_, positionY));
-			positionY += sizeY + 5.0f;
 			sizeY = Quest_[i]->getSize().y;
+			positionY += sizeY + 5.0f;
 		}
 		positionY += 5.0f;
 	}
+	else {
+		positionY += 120.0f;
+	}
 
+	//Setup the relationship and needs texts string.
 	npc_relationships_text_.setString(GetRelationshipsText());
 	npc_needs_text_.setString(GetNeedsText());
+	//Change the needs texts position on the screen depending on how many 
+	//relationships the character has.
 	npc_needs_text_.setPosition(10.0f, 100.0f +
 		(npc_->GetRelationships().size() + 1) * 30 + 20.0f);
+
+	//Change the relationship change text's position on the screen dependent on 
+	//number of quests.
+	relationship_change_text_.setPosition(left_size_start_, positionY);
+	//Set the relationships change text based on how much the relationship with the
+	//player has changed since the last time the player entered the quest location.
+	int relationship_change = npc_->relationship_change_;
+	std::string relationship_change_string = "";
+	if (relationship_change >= 3) {
+		relationship_change_string = npc_->GetName() + " likes you\na lot more \nthan before\n	:D";
+	}
+	else if (relationship_change > 0) {
+		relationship_change_string = npc_->GetName() + " likes you\nmore than\nbefore	:)";
+	}
+	else if (relationship_change == 0) {
+		relationship_change_string = npc_->GetName() + "'s opinion\nabout you\nhasn't changed\n	 :|";
+	}
+	else if (relationship_change < 0) {
+		relationship_change_string = npc_->GetName() + " likes you\nless than\nbefore	:(";
+	}
+	else if (relationship_change <= -3) {
+		relationship_change_string = npc_->GetName() + " likes you\na lot less\nthan before\n	D:";
+	}
+	relationship_change_text_.setString(relationship_change_string);
+	npc_->relationship_change_ = 0;
 }
 
 bool QuestLocation::Update(float dt, Player* player)
@@ -91,15 +126,17 @@ bool QuestLocation::Update(float dt, Player* player)
 			}
 			player->AddMemory(memory);
 			//Show reward screen.
-			player->SetInfoWindow(true);
+			player->SetInfoWindow(true, 1);
 
 			//Remove the quest from pool of quests.
+			SaveData::SaveCompletedQuestData(npc_, Quest_[i]);
 			npc_->AddCompletedQuest(Quest_[i]);
 			quest_manager_->DeleteQuest(Quest_[i], npc_);
 			SetUpLocation();
 			return true;
 		}
 		else if (Quest_[i]->DeleteButtonPressed()) {
+			SaveData::SaveDeletedQuestData(npc_, Quest_[i]);
 			quest_manager_->DeleteQuest(Quest_[i], npc_);
 			npc_->ChangeRelationshipWithCharacter("Player", -1);
 			SetUpLocation();

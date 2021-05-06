@@ -29,6 +29,7 @@ void TaskLocation::RenderLocation()
 
 void TaskLocation::SetUpLocation()
 {
+	//Set all of the tasks up so they are visible on the screen.
 	if (Task_.size() > 0) {
 		float sizeY = Task_[0]->getSize().y;
 		float positionY = 5.0f;
@@ -42,6 +43,7 @@ void TaskLocation::SetUpLocation()
 
 bool TaskLocation::Update(float dt, Player* player)
 {
+	//If a tasks button is pressed then resolve. 
 	for (int i = 0; i < Task_.size(); i++) {
 		if (Task_[i]->ButtonPressed()) {
 			Input::SetMouseLeftDown(false);

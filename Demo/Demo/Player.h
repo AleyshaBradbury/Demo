@@ -13,7 +13,7 @@ public:
 	void DoAction(float dt, Grid* grid);
 	void RenderTurnButton();
 
-	void SetInfoWindow(bool reward);
+	void SetInfoWindow(bool reward, int num);
 	void CheckDead();
 
 private:

@@ -50,6 +50,7 @@ void MainScene::Init()
 
 	info_window_->InitialisePlayer(character_manager_.player_);
 
+	//Load npcs and enemies from file.
 	for (auto& p : fs::directory_iterator("NPCs")) {
 		character_manager_.CreateNPCFromFile(p.path().string(), quest_manager_);
 	}
@@ -79,21 +80,26 @@ void MainScene::Release()
 
 bool MainScene::Update(float dt)
 {
+	//If the info window is active then only handle those inputs.
 	if (info_window_->isAlive()) {
 		info_window_->Collsion();
 		return false;
 	}
+	//Move a character if applicable, else do turn actions.
 	Character* c = grid_->MovementAnimation(dt);
-	if (turn_manager_.character_turn_) {
-		if (!c) {
+	if (!c) {
+		if (turn_manager_.character_turn_) {
 			turn_manager_.character_turn_->DoAction(dt, grid_);
+		}
+		else {
+			turn_manager_.DetermineCharacterTurn();
 		}
 		if (turn_manager_.character_turn_) {
 			grid_->grid_view_.setCenter(turn_manager_.character_turn_->getPosition());
 		}
 	}
 	else {
-		turn_manager_.DetermineCharacterTurn();
+		grid_->grid_view_.setCenter(c->getPosition());
 	}
 	return false;
 }

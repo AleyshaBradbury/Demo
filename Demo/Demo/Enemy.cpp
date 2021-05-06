@@ -5,11 +5,13 @@
 
 Enemy::Enemy(int health, sf::Vector2f position, sf::Texture* texture,
 	CharacterManager* character_manager, int movements, int attacks, std::string name,
-	std::string drop) : 
+	std::string drop, int movement, int attack_strength) :
 	Character(name, health, position, texture, character_manager, movements, attacks)
 {
 	is_enemy_ = true;
 	drop_ = drop;
+	movement_ = movement;
+	attack_strength_ = attack_strength;
 }
 
 Enemy::~Enemy()
@@ -35,33 +37,31 @@ void Enemy::DoAction(float dt, Grid* grid)
 		if (GetMovementActions() <= 0) {
 			IncrementTurn();
 		}
+		else {
+			//If there is more movement left then evaluate target a second time.
+			stage_ = TurnStages::FindTarget;
+		}
 		break;
 	case TurnStages::Attack:
-		if (target_ && grid->CheckIfInRange(GetGridNode(), target_->GetGridNode(), 1)) {
-			if (GetAction() > 0) {
-				if (target_->GetName() == "Player") {
-					Player* player = (Player*)target_;
-					player->SetInfoWindow(false);
-				}
-				else if (target_->SubtractHealth(attack_strength_)) {
-					character_manager_->DeleteDeadGoodCharacter(target_->GetName());
-					target_ = nullptr;
-				}
-				
-				SpendAction();
+		//Attack the target.
+		if (target_ && GetAction() > 0 &&
+			grid->CheckIfInRange(GetGridNode(), target_->GetGridNode(), 1)) {
+			if (target_->GetName() == "Player") {
+				Player* player = (Player*)target_;
+				player->SetInfoWindow(false, attack_strength_);
 			}
-			else {
-				IncrementTurn();
+			else if (target_->SubtractHealth(attack_strength_)) {
+				character_manager_->DeleteDeadGoodCharacter(target_->GetName());
+				target_ = nullptr;
 			}
+			SpendAction();
 		}
 		else {
 			IncrementTurn();
+			TurnManager::DetermineCharacterTurn();
+			ResetActions();
 		}
 		break;
-	}
-	if (stage_ == TurnStages::FindTarget) {
-		TurnManager::DetermineCharacterTurn();
-		ResetActions();
 	}
 }
 
