@@ -252,7 +252,7 @@ void CharacterManager::CreateNPC()
 	sf::Vector2i initial_position = sf::Vector2i(0, 0);
 	do {
 		initial_position = sf::Vector2i(rand() % 10 - 5, rand() % 10 - 5);
-	} while (grid_->InitialiseCharacter(Npcs_.back(), initial_position));
+	} while (!grid_->InitialiseCharacter(Npcs_.back(), initial_position));
 
 	//Create relationships between all characters.
 	CreateRelationship(Npcs_.back(), "Player");
