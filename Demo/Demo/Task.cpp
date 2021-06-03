@@ -43,7 +43,7 @@ bool Task::DoAction()
 	if (IsCompleteable()) {
 		for (int i = 0; i < task_details_.thing_required_.size(); i++) {
 			ResourceManager::AddResource(task_details_.thing_required_[i], 
-				task_details_.required_per_task_[i]);
+				-task_details_.required_per_task_[i]);
 		}
 		ResourceManager::AddResource(task_details_.thing_collected_, task_details_.collected_per_task_);
 		return true;
@@ -63,9 +63,6 @@ std::string Task::GetThingCollected()
 bool Task::IsCompleteable()
 {
 	//If all of the required resources are in the inventory then return true.
-	if (task_details_.thing_required_.size() == 0) {
-		return true;
-	}
 	for (int i = 0; i < task_details_.thing_required_.size(); i++) {
 		if (!ResourceManager::CanAddResource(task_details_.thing_required_[i],
 			-task_details_.required_per_task_[i])) {
