@@ -12,7 +12,7 @@ class LocationManager
 public:
 	~LocationManager();
 	void DeleteAllQuestLocations();
-	void CreateQuestLocations(Grid* grid, const CharacterManager* character_manager_,
+	void CreateQuestLocation(Grid* grid, NPC* npc,
 		QuestManager* quest_manager);
 	void CreateTaskLocations(Grid* grid);
 	void AddTaskToLocations(std::string task_name, std::string resource_name,

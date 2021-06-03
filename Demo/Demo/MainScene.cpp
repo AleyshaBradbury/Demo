@@ -54,6 +54,8 @@ void MainScene::Init()
 
 	info_window_->InitialisePlayer(character_manager_.player_);
 
+	character_manager_.SetLocationManager(location_manager_);
+
 	//Load npcs and enemies from file.
 	character_manager_.LoadNPCNamesFromFile();
 	for (int i = 0; i < 3; i++) {
@@ -65,9 +67,7 @@ void MainScene::Init()
 	}
 
 	//Pass in managers into classes as needed.
-	location_manager_->CreateQuestLocations(grid_, &character_manager_, quest_manager_);
 	turn_manager_.turn_ = TurnManager::Turn::Player;
-	character_manager_.SetLocationManager(location_manager_);
 
 	int random = rand() % 3 + 1;
 	for (int i = 0; i < random; i++) {

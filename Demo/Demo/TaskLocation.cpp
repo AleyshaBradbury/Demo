@@ -35,8 +35,8 @@ void TaskLocation::SetUpLocation()
 		float positionY = 5.0f;
 		for (int i = 0; i < Task_.size(); i++) {
 			Task_[i]->SetUpPositionOnScreen(sf::Vector2f(left_size_start_, positionY));
-			positionY += sizeY + 5.0f;
 			sizeY = Task_[i]->getSize().y;
+			positionY += sizeY + 5.0f;
 		}
 	}
 }

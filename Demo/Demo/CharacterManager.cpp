@@ -259,6 +259,7 @@ void CharacterManager::CreateNPC()
 	for (int i = 0; i < Npcs_.size() - 1; i++) {
 		CreateRelationship(Npcs_.back(), Npcs_[i]->GetName());
 	}
+	location_manager_->CreateQuestLocation(grid_, Npcs_.back(), quest_manager_);
 }
 
 NPC* CharacterManager::FindNPCByName(std::string name)
