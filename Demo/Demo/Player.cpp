@@ -3,6 +3,7 @@
 #include "CharacterManager.h"
 #include "Grid.h"
 #include "SceneManager.h"
+#include "ResourceManager.h"
 
 Player::Player(int health, sf::Vector2f position, sf::Texture* texture, 
 	CharacterManager* character_manager, unsigned int movements, unsigned int attacks,

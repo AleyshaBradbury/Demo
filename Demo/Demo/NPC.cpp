@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include "Grid.h"
+#include "QuestManager.h"
 
 NPC::NPC(std::string name, int health, sf::Vector2f position, 
 	sf::Texture* texture, CharacterManager* character_manager,

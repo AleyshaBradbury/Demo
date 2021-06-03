@@ -1,16 +1,12 @@
 #include "LocationManager.h"
 #include "Grid.h"
 #include "NPC.h"
+#include "QuestLocation.h"
 
 LocationManager::~LocationManager()
 {
 	DeleteAllQuestLocations();
-
-	while (Task_Locations_.size() > 0) {
-		delete Task_Locations_.back();
-		Task_Locations_.back() = nullptr;
-		Task_Locations_.pop_back();
-	}
+	DeleteAllTaskLocations();
 }
 
 void LocationManager::DeleteAllQuestLocations()
@@ -44,27 +40,24 @@ void LocationManager::CreateTaskLocations(Grid* grid)
 	Task_Locations_.push_back(new TaskLocation(
 		grid->GetNodeAtPositionOrClosest(sf::Vector2i(3, 3)),
 		&task_location_texture_));
-	Task_Locations_.back()->AddAction(new Task("Collect Wood", "wood", 1));
 	Task_Locations_.push_back(new TaskLocation(
 		grid->GetNodeAtPositionOrClosest(sf::Vector2i(-3, 3)),
 		&task_location_texture_));
-	Task_Locations_.back()->AddAction(new Task("Collect Food", "food", 1));
 	Task_Locations_.push_back(new TaskLocation(
 		grid->GetNodeAtPositionOrClosest(sf::Vector2i(-3, -3)),
 		&task_location_texture_));
-	Task_Locations_.back()->AddAction(new Task("Mine Ore", "ore", 1));
-	Task_Locations_.back()->AddAction(new Task("Mine Stone", "stone", 1));
 	Task_Locations_.push_back(new TaskLocation(
 		grid->GetNodeAtPositionOrClosest(sf::Vector2i(3, -3)),
 		&task_location_texture_));
-	std::vector<std::string> task_requirements;
-	std::vector<int> amount_required;
-	task_requirements.push_back("ore");
-	amount_required.push_back(1);
-	task_requirements.push_back("wood");
-	amount_required.push_back(2);
-	Task_Locations_.back()->AddAction(new Task("Smelt Iron From Ore", "iron", 1,
-		task_requirements, amount_required));
+}
+
+void LocationManager::AddTaskToLocations(std::string task_name, 
+	std::string resource_name, std::vector<std::string> resource_names, 
+	std::vector<int> resource_amounts)
+{
+	int random = rand() % 4;
+	Task_Locations_[random]->AddAction(new Task(task_name, resource_name, 1, 
+		resource_names, resource_amounts));
 }
 
 void LocationManager::DeleteQuestLocation(QuestLocation* quest_location)
@@ -76,5 +69,14 @@ void LocationManager::DeleteQuestLocation(QuestLocation* quest_location)
 			Quest_Locations_.erase(Quest_Locations_.begin() + i);
 			return;
 		}
+	}
+}
+
+void LocationManager::DeleteAllTaskLocations()
+{
+	while (Task_Locations_.size() > 0) {
+		delete Task_Locations_.back();
+		Task_Locations_.back() = nullptr;
+		Task_Locations_.pop_back();
 	}
 }

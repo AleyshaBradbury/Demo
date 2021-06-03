@@ -6,6 +6,7 @@
 #include "TurnManager.h"
 #include "GeneralFunctions.h"
 #include "TaskLocation.h"
+#include "ResourceManager.h"
 
 namespace fs = std::filesystem;
 
@@ -16,6 +17,8 @@ MainScene::MainScene(InfoWindow* info_window)
 	location_manager_ = new LocationManager();
 	grid_ = new Grid(location_manager_);
 	location_manager_->CreateTaskLocations(grid_);
+
+	ResourceManager::LoadInitialResourcesFromFile(location_manager_);
 
 	//Set up the view.
 	grid_->grid_view_.setSize((sf::Vector2f)GeneralVariables::window_.getSize());

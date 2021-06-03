@@ -1,8 +1,9 @@
 #pragma once
 #include "TaskLocation.h"
-#include "QuestLocation.h"
 #include "Task.h"
 #include "CharacterManager.h"
+
+class QuestLocation;
 
 class Grid;
 
@@ -14,7 +15,10 @@ public:
 	void CreateQuestLocations(Grid* grid, const CharacterManager* character_manager_,
 		QuestManager* quest_manager);
 	void CreateTaskLocations(Grid* grid);
+	void AddTaskToLocations(std::string task_name, std::string resource_name,
+		std::vector<std::string> resource_names, std::vector<int> resource_amounts);
 	void DeleteQuestLocation(QuestLocation* quest_location);
+	void DeleteAllTaskLocations();
 
 private:
 	std::vector<TaskLocation*> Task_Locations_;
