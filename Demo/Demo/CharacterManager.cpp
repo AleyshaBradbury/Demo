@@ -116,6 +116,11 @@ void CharacterManager::SetGrid(Grid* grid)
 	grid_ = grid;
 }
 
+void CharacterManager::SetQuestManager(QuestManager* quest_manager)
+{
+	quest_manager_ = quest_manager;
+}
+
 void CharacterManager::AddEnemySpawnPoint(Node* node)
 {
 	if (std::find(Enemy_Spawn_Points_.begin(), Enemy_Spawn_Points_.end(), node) == Enemy_Spawn_Points_.end()) {
@@ -202,17 +207,10 @@ Enemy* CharacterManager::ChooseEnemyType()
 		Enemy_Types_[random].movement_, Enemy_Types_[random].attack_strength_);
 }
 
-void CharacterManager::CreateNPCFromFile(std::string file_name, QuestManager* quest_manager)
+void CharacterManager::LoadNPCNamesFromFile()
 {
-	//Read in the npcs data from file and then initialise that character onto the grid.
-	std::string name = "";
-	int max_health = 0;
-	std::string texture_location;
-	sf::Vector2i initial_position(0, 0);
-	std::vector<std::string> Needs;
-
 	std::fstream file;
-	file.open(file_name);
+	file.open("OtherFiles/NPCData.csv");
 	std::string line, word, temp;
 
 	while (file >> temp) {
@@ -228,32 +226,33 @@ void CharacterManager::CreateNPCFromFile(std::string file_name, QuestManager* qu
 		}
 
 		if (row.size() > 0) {
-			if (row[0] == "name") {
-				name = row[1];
+			NPC_Details_.push_back(NPCDetails());
+			NPC_Details_.back().name = row[0];
+			sf::Texture* texture = nullptr;
+			if (row.size() > 1 && row[1] != "") {
+				texture->loadFromFile(row[1]);
 			}
-			else if (row[0] == "max health") {
-				max_health = std::stoi(row[1]);
-			}
-			else if (row[0] == "texture location") {
-
-			}
-			else if (row[0] == "start position") {
-				initial_position = sf::Vector2i(std::stoi(row[1]), std::stoi(row[2]));
-			}
-			else if (row[0] == "needs") {
-				for (int i = 1; i < row.size(); i++) {
-					Needs.push_back(row[i]);
-				}
-			}
+			NPC_Details_.back().texture = texture;
 		}
 	}
+}
 
-	Npcs_.push_back(new NPC(name, max_health, sf::Vector2f(), nullptr, this, 1, 0, quest_manager));
+void CharacterManager::CreateNPC()
+{
+	int random = rand() % NPC_Details_.size();
+	NPCDetails details = NPC_Details_[random];
+	NPC_Details_.erase(NPC_Details_.begin() + random);
+	Npcs_.push_back(new NPC(details.name, rand() % 6 + 5, sf::Vector2f(), 
+		nullptr, this, 1, 0, quest_manager_));
 	Npcs_.back()->setFillColor(sf::Color::Blue);
-	for (int i = 0; i < Needs.size(); i++) {
-		Npcs_.back()->AddNeed(Needs[i]);
- }
-	grid_->InitialiseCharacter(Npcs_.back(), initial_position);
+	random = rand() % 3 + 2;
+	for (int i = 0; i < random; i++) {
+		Npcs_.back()->AddNeed();
+	}
+	sf::Vector2i initial_position = sf::Vector2i(0, 0);
+	do {
+		initial_position = sf::Vector2i(rand() % 10 - 5, rand() % 10 - 5);
+	} while (grid_->InitialiseCharacter(Npcs_.back(), initial_position));
 
 	//Create relationships between all characters.
 	CreateRelationship(Npcs_.back(), "Player");

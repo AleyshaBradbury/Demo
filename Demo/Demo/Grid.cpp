@@ -37,7 +37,7 @@ bool Grid::InitialiseCharacter(Character* character, sf::Vector2i node_position)
 bool Grid::InitialiseCharacter(Character* character, Node* node)
 {
 	//Set the character on the tile and find their movement area.
-	if (!node->GetCharacterOnTile()) {
+	if (!node->GetCharacterOnTile() && !node->GetLocation()) {
 		SetCharacterPositionOnGrid(character, node);
 		pathfinding_.FindAvailableNodes(character, Nodes_);
 		return true;

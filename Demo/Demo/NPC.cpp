@@ -3,6 +3,7 @@
 #include <math.h>
 #include "Grid.h"
 #include "QuestManager.h"
+#include "ResourceManager.h"
 
 NPC::NPC(std::string name, int health, sf::Vector2f position, 
 	sf::Texture* texture, CharacterManager* character_manager,
@@ -48,10 +49,20 @@ void NPC::IncrementNeeds()
 	}
 }
 
-void NPC::AddNeed(std::string name)
+void NPC::AddNeed()
 {
-	//Insert a need into the needs map.
-	Needs_.insert(std::pair<std::string, int>(name, rand() % 10));
+	bool finished = false;
+	while (!finished) {
+		uint32_t random = rand() % ResourceManager::resources.size();
+		std::unordered_map<std::string, uint32_t>::iterator it =
+			ResourceManager::resources.begin();
+		std::advance(it, random);
+		//Insert a need into the needs map.
+		if (Needs_.find((*it).first) == Needs_.end()) {
+			Needs_.insert(std::pair<std::string, int>((*it).first, rand() % 10));
+			finished = true;
+		}
+	}
 }
 
 std::unordered_map<std::string, uint32_t> NPC::GetAllNeeds()

@@ -13,7 +13,8 @@ public:
 	//A vector of npcs that are alive.
 	std::vector<NPC*> Npcs_;
 	//Load in NPCs from file.
-	void CreateNPCFromFile(std::string file_name, QuestManager* quest_manager);
+	void LoadNPCNamesFromFile();
+	void CreateNPC();
 	NPC* FindNPCByName(std::string name);
 	//A vector of enemies that are alive.
 	std::vector<Enemy*> Enemies_;
@@ -28,6 +29,7 @@ public:
 
 	void SetLocationManager(LocationManager* location_manager);
 	void SetGrid(Grid* grid);
+	void SetQuestManager(QuestManager* quest_manager);
 	void AddEnemySpawnPoint(Node* node);
 
 	std::string GetEnemyDropByEnemyName(std::string enemy_name);
@@ -41,6 +43,16 @@ private:
 	Enemy* ChooseEnemyType();
 	LocationManager* location_manager_ = nullptr;
 	Grid* grid_ = nullptr;
+	QuestManager* quest_manager_ = nullptr;
+	
+	//NPCVariables.
+	struct NPCDetails {
+		std::string name;
+		sf::Texture* texture;
+	};
+	std::vector<NPCDetails> NPC_Details_;
+
+	//Enemy variables.
 	unsigned int num_to_spawn_ = 2;
 	std::vector<Node*> Enemy_Spawn_Points_;
 	bool spawned_before_ = false;

@@ -29,6 +29,7 @@ MainScene::MainScene(InfoWindow* info_window)
 
 	quest_manager_ = new QuestManager(&character_manager_);
 	character_manager_.SetGrid(grid_);
+	character_manager_.SetQuestManager(quest_manager_);
 }
 
 MainScene::~MainScene()
@@ -54,8 +55,9 @@ void MainScene::Init()
 	info_window_->InitialisePlayer(character_manager_.player_);
 
 	//Load npcs and enemies from file.
-	for (auto& p : fs::directory_iterator("NPCs")) {
-		character_manager_.CreateNPCFromFile(p.path().string(), quest_manager_);
+	character_manager_.LoadNPCNamesFromFile();
+	for (int i = 0; i < 3; i++) {
+		character_manager_.CreateNPC();
 	}
 
 	for (auto& p : fs::directory_iterator("Enemies")) {

@@ -13,7 +13,7 @@ public:
 	void DoAction(float dt, Grid* grid);
 
 	void IncrementNeeds();
-	void AddNeed(std::string name);
+	void AddNeed();
 	std::unordered_map<std::string, uint32_t> GetAllNeeds();
 
 	void AddCompletedQuest(Quest* quest);
