@@ -68,7 +68,7 @@ bool Task::IsCompleteable()
 	}
 	for (int i = 0; i < task_details_.thing_required_.size(); i++) {
 		if (!ResourceManager::CanAddResource(task_details_.thing_required_[i],
-			task_details_.required_per_task_[i])) {
+			-task_details_.required_per_task_[i])) {
 			return false;
 		}
 	}
