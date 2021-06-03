@@ -55,7 +55,7 @@ void LocationManager::AddTaskToLocations(std::string task_name,
 	std::string resource_name, std::vector<std::string> resource_names, 
 	std::vector<int> resource_amounts)
 {
-	int random = rand() % 4;
+	int random = rand() % Task_Locations_.size();
 	Task_Locations_[random]->AddAction(new Task(task_name, resource_name, 1, 
 		resource_names, resource_amounts));
 }
