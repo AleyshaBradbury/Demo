@@ -56,7 +56,7 @@ bool Character::SubtractHealth(int health)
 {
 	//Remove health from a character then check if that character is dead.
 	health_ -= health;
-	health = (int)fminf((float)health, (float)max_health_);
+	health_ = (int)fminf((float)health_, (float)max_health_);
 	SetHealthText();
 	if (health_ <= 0) {
 		return true;

@@ -168,7 +168,6 @@
     <ClCompile Include="QuestLocation.cpp" />
     <ClCompile Include="QuestManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="SaveData.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Quest.cpp" />
@@ -205,7 +204,6 @@
     <ClInclude Include="QuestLocation.h" />
     <ClInclude Include="QuestManager.h" />
     <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="SaveData.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Quest.h" />

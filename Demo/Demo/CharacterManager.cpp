@@ -83,7 +83,7 @@ void CharacterManager::SpawnEnemies()
 		//If there was no enemies spawned last enemy turn then definitely spawn at 
 		//least one enemy.
 		if (!spawned_before_) {
-			random++;
+			random = random == 0 ? 1 : random;
 			spawned_before_ = true;
 		}
 		else if (random == 0) {

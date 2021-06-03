@@ -1,7 +1,7 @@
 #include "QuestManager.h"
 #include "CharacterManager.h"
 #include "ResourceManager.h"
-#include "SaveData.h"
+
 
 QuestManager::QuestManager(CharacterManager* character_manager)
 {
@@ -10,8 +10,11 @@ QuestManager::QuestManager(CharacterManager* character_manager)
 
 void QuestManager::GenerateQuests(NPC* npc)
 {
-    //Determine how many quests the npc should be giving out by their relationship with the player.
-    uint32_t weight = npc->GetRelationshipWithCharacter("Player") == 0 ? 1 : npc->GetRelationshipWithCharacter("Player");
+    /*Determine how many quests the npc should be giving out by their relationship 
+    with the player. Weight has to equal at least 1 as the NPC should always 
+    be capable of giving out at least one quest*/
+    uint32_t weight = npc->GetRelationshipWithCharacter("Player") == 
+        0 ? 1 : npc->GetRelationshipWithCharacter("Player");
     if (GetNPCsQuests(npc).size() < (uint32_t)std::ceil(weight / 3)) {
         //Determine what and how many resources should be in the quest.
         std::vector<std::string> Resources = DetermineResources(npc);
@@ -32,7 +35,6 @@ void QuestManager::GenerateQuests(NPC* npc)
             Quest* quest = new Quest("I need " + Quest_Details[0].resource_ + "!",
                 Quest_Details);
             AddQuest(npc, quest);
-            SaveData::SaveNewQuestData(quest, npc);
         }
     }
 }
@@ -64,8 +66,10 @@ std::vector<std::string> QuestManager::DetermineResources(NPC* npc)
     //Determine what needs will be added to the quest.
     std::unordered_map<std::string, uint32_t> Needs = npc->GetAllNeeds();
     for (auto& need : Needs) {
+        //The higher the need number the more likely random = 0
         int random = rand() % (10 - need.second);
         if (random == 0) {
+            //Add resource to list
             resource.push_back(need.first);
         }
     }
@@ -104,7 +108,8 @@ void QuestManager::AddQuest(NPC* npc, Quest* quest)
 
 unsigned int QuestManager::GetQuestAmount(NPC* npc)
 {
-    //Determine how much of an item the npc will ask for depending on their relationship with the player.
+    /*Determine how much of an item the npc will ask for depending on
+    their relationship with the player*/
     int amount = npc->GetRelationshipWithCharacter("Player") - 9;
     amount = (int)std::ceil(abs(amount) / 3);
     return rand() % 3 + amount;

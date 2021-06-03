@@ -1,7 +1,6 @@
 #include "QuestLocation.h"
 #include "Input.h"
 #include "Player.h"
-#include "SaveData.h"
 
 QuestLocation::QuestLocation(NPC* npc, Node* node, sf::Texture* texture, 
 	QuestManager* quest_manager) :
@@ -129,14 +128,12 @@ bool QuestLocation::Update(float dt, Player* player)
 			player->SetInfoWindow(true, 1);
 
 			//Remove the quest from pool of quests.
-			SaveData::SaveCompletedQuestData(npc_, Quest_[i]);
 			npc_->AddCompletedQuest(Quest_[i]);
 			quest_manager_->DeleteQuest(Quest_[i], npc_);
 			SetUpLocation();
 			return true;
 		}
 		else if (Quest_[i]->DeleteButtonPressed()) {
-			SaveData::SaveDeletedQuestData(npc_, Quest_[i]);
 			quest_manager_->DeleteQuest(Quest_[i], npc_);
 			npc_->ChangeRelationshipWithCharacter("Player", -1);
 			SetUpLocation();

@@ -18,7 +18,6 @@
 #include "StatsAndInventoryScene.h"
 
 #include "InfoWindow.h"
-#include "SaveData.h"
 
 //
 //Declaring Static Members
@@ -56,9 +55,6 @@ std::unordered_map<std::string, unsigned int> ResourceManager::resources;
 //Location Scene static members.
 float LocationScene::failed_action_timer_ = 0.0f;
 
-//Save Data static members.
-std::ofstream SaveData::file;
-
 int main() {
 
 	srand((int)time(NULL));
@@ -71,8 +67,6 @@ int main() {
 
 	//Load font in from file.
 	GeneralVariables::font_.loadFromFile("fonts/consola.ttf");
-
-	SaveData::file.open("important_data/important_data.csv");
 
 	//Initialise the info window.
 	InfoWindow info_window_;

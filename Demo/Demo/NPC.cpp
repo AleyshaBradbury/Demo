@@ -2,7 +2,6 @@
 #include <iostream>
 #include <math.h>
 #include "Grid.h"
-#include "SaveData.h"
 
 NPC::NPC(std::string name, int health, sf::Vector2f position, 
 	sf::Texture* texture, CharacterManager* character_manager,
@@ -24,13 +23,20 @@ NPC::~NPC()
 
 void NPC::DoAction(float dt, Grid* grid)
 {
-	heal = !heal;
-	if (heal) {
-		SubtractHealth(-1);
+	/*If the npc is not at max health, alterate turns between healing and not 
+	healing the npc. If the NPC is at full health, set heal so that they heal 
+	the next time they are not at full health on their turn.*/
+	if (GetHealth() != max_health_) {
+		heal = !heal;
+		if (heal) {
+			SubtractHealth(-1);
+		}
+	}
+	else {
+		heal = true;
 	}
 	//Generate quests then end the npc's turn.
 	quest_manager_->GenerateQuests(this);
-	SaveData::SaveRelationshipChanges(this);
 	TurnManager::DetermineCharacterTurn();
 }
 
